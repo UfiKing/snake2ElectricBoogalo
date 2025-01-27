@@ -116,14 +116,15 @@ class logic:
         if event.type == SCREEN_UPDATE and logic.state == 2:
             self.mainGame.update()
         if event.type == pygame.KEYDOWN:
-            print(f"current direction {self.mainGame.snake.direction}, currentDirection = {self.mainGame.snake.currentDirection}")
-            if event.key == pygame.K_w or event.key == pygame.K_UP and self.mainGame.snake.currentDirection.y != 1:
+            print(f"direction = {self.mainGame.snake.direction}, currentDirection = {self.mainGame.snake.currentDirection} "    )
+            if (event.key == pygame.K_w or event.key == pygame.K_UP) and self.mainGame.snake.currentDirection.y != 1:
                 self.mainGame.snake.direction = Vector2(0, -1)
-            elif event.key == pygame.K_s or event.key == pygame.K_DOWN and self.mainGame.snake.currentDirection.y != -1:
+            elif (event.key == pygame.K_s or event.key == pygame.K_DOWN) and self.mainGame.snake.currentDirection.y != -1:
                 self.mainGame.snake.direction = Vector2(0, 1)
-            elif event.key == pygame.K_d or event.key == pygame.K_RIGHT and self.mainGame.snake.currentDirection.x != -1:
+            elif (event.key == pygame.K_d or event.key == pygame.K_RIGHT) and self.mainGame.snake.currentDirection.x != -1:
                 self.mainGame.snake.direction = Vector2(1, 0)
-            elif event.key == pygame.K_a or event.key == pygame.K_LEFT and self.mainGame.snake.currentDirection.x != 1:
+            elif (event.key == pygame.K_a or event.key == pygame.K_LEFT) and self.mainGame.snake.currentDirection.x != 1:
+                print(self.mainGame.snake.currentDirection)
                 self.mainGame.snake.direction = Vector2(-1, 0)
 
     def drawAndUpdate(self, screen):

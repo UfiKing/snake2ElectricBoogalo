@@ -16,6 +16,7 @@ class Snake:
         self.newBlock = False
         self.currentDirection = self.direction
 
+
     def __init__(self):
         self.body = [Vector2(5, 10), Vector2(4,10), Vector2(3,10)]
         self.direction = Vector2(1, 0)
