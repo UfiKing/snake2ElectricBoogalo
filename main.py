@@ -32,7 +32,7 @@ class mainGame:
 
     def collide(self):
         if self.fruit.pos == self.snake.body[0]:
-            self.fruit.randomize()
+            self.fruit.randomize(self.snake.body)
             self.snake.addBlock()
 
     def checkFail(self):
@@ -47,22 +47,22 @@ class mainGame:
     def gameOver(self):
         changeState(1)
         self.snake.setDefaults()
-        self.fruit.randomize()
+        self.fruit.randomize(self.snake.body)
 
 class mainScreen:
     def __init__(self, screen):
         self.screen = screen
         self.state = 1
 
-        self.mainFont = pygame.font.Font('freesansbold.ttf', cellSize *2)
-        self.miniFont = pygame.font.Font('freesansbold.ttf', cellSize - (cellSize //10) )
+        self.mainFont = pygame.font.Font('font.ttf', int(cellSize * 1.5) )
+        self.miniFont = pygame.font.Font('font.ttf', int(cellSize * 0.8) - (cellSize //10) )
 
-        self.mainText = self.mainFont.render('Main Screen', True, "#FFFFFF")
+        self.mainText = self.mainFont.render('Main Screen', False, "#FFFFFF")
         self.mainTextRect = self.mainText.get_rect()
 
-        self.startText = self.miniFont.render("Start game", True, "#FFFFFF")
+        self.startText = self.miniFont.render("Start game", False, "#FFFFFF")
         self.startTextRect = self.startText.get_rect()
-        self.leaderboardText = self.miniFont.render("Leaderboard", True,"#FFFFFF")
+        self.leaderboardText = self.miniFont.render("Leaderboard", False,"#FFFFFF")
         self.leaderboardTextRect = self.leaderboardText.get_rect(x=200)
 
         # set the center of the rectangular object.
@@ -105,18 +105,67 @@ class mainScreen:
 def changeState(newState):
     logic.state = newState
 
+class gameOverScreen:
+    def __init__(self):
+        self.mainFont = pygame.font.Font('font.ttf', int(cellSize * 1.5))
+        self.miniFont = pygame.font.Font('font.ttf', int(cellSize * 0.5))
+        self.midiFont = pygame.font.Font('font.ttf', cellSize - (cellSize // 10))
+
+        self.mainText = self.mainFont.render('Game over', False, "#FFFFFF")
+        self.mainTextRect = self.mainText.get_rect()
+
+        self.menuText = self.miniFont.render("Back to Main Menu", False, "#FFFFFF")
+        self.menuTextRect = self.menuText.get_rect()
+
+
+        self.leaderBoardText = self.miniFont.render("To Leaderboard", False,"#FFFFFF")
+        self.leaderBoardTextRect = self.leaderBoardText.get_rect()
+
+        self.retryText = self.miniFont.render("Retry", False, "#FFFFFF")
+        self.retryTextRect = self.retryText.get_rect()
+
+        self.mainTextRect.center = (screen.get_width()//2, screen.get_height() // 2 - (screen.get_height() // 6))
+
+        self.menuTextRect.center = (self.mainTextRect.centerx, self.mainTextRect.y + (self.mainTextRect.height * 2))
+
+        self.leaderBoardTextRect.center = (self.menuTextRect.centerx, self.menuTextRect.y + int(self.mainTextRect.height * 1.5))
+
+        self.retryTextRect.center = (self.leaderBoardTextRect.centerx, self.leaderBoardTextRect.y + int(self.mainTextRect.height * 1.5))
+
+
+        self.menuBackgroundRect = pygame.Rect(int(self.menuTextRect.x * 0.9), int(self.menuTextRect.y * 0.96) , self.menuTextRect.width + self.menuTextRect.width * 0.1,
+                                              self.menuTextRect.height * 2)
+
+        self.leaderBoardBackgroundRect = pygame.Rect(int(self.leaderBoardTextRect.x * 0.94),
+                                                     int(self.leaderBoardTextRect.y * 0.97),
+                                                     self.leaderBoardTextRect.width + self.leaderBoardTextRect.width * 0.1,
+                                                    self.leaderBoardTextRect.height * 2)
+
+
+    def draw(self, surface):
+        surface.blit(self.mainText, self.mainTextRect)
+        #pygame.draw.rect(surface, "#555555", self.menuBackgroundRect)
+        pygame.draw.rect(surface, "#555555", self.leaderBoardBackgroundRect)
+
+        surface.blit(self.menuText, self.menuTextRect)
+        surface.blit(self.leaderBoardText, self.leaderBoardTextRect)
+        surface.blit(self.retryText, self.retryTextRect)
+
+
+
+
 class logic:
-    state = 1
+    state = 3
     def __init__(self):
         self.mainGame = mainGame()
         self.mainScreen = mainScreen(screen)
+        self.gameOverScreen = gameOverScreen()
 
 
     def events(self, event):
         if event.type == SCREEN_UPDATE and logic.state == 2:
             self.mainGame.update()
         if event.type == pygame.KEYDOWN:
-            print(f"direction = {self.mainGame.snake.direction}, currentDirection = {self.mainGame.snake.currentDirection} "    )
             if (event.key == pygame.K_w or event.key == pygame.K_UP) and self.mainGame.snake.currentDirection.y != 1:
                 self.mainGame.snake.direction = Vector2(0, -1)
             elif (event.key == pygame.K_s or event.key == pygame.K_DOWN) and self.mainGame.snake.currentDirection.y != -1:
@@ -132,6 +181,9 @@ class logic:
             self.mainScreen.draw(screen)
         elif logic.state == 2:
             self.mainGame.draw(screen)
+        elif logic.state == 3:
+            self.gameOverScreen.draw(screen)
+
 
 
 game = logic()

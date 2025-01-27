@@ -15,7 +15,10 @@ class Fruit:
         screen.blit(self.jabolko, fruitRect)
         #pygame.draw.rect(screen, (126,166,114), fruitRect)
 
-    def randomize(self):
+    def randomize(self, snakeBody):
         self.x = random.randint(0, cellNumber - 1)
         self.y = random.randint(0, cellNumber - 1)
         self.pos = Vector2(self.x, self.y)
+        for snake in snakeBody:
+            if snake == self.pos:
+                self.randomize(snakeBody)
