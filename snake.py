@@ -1,0 +1,107 @@
+import pygame
+from pygame import Vector2
+from constants import *
+
+class Snake:
+    def getImage(self, x, y):
+        slika = pygame.Surface((16, 16)).convert_alpha()
+        slika.blit(self.snakeSpriteSheet, (0, 0), (x, y, 16, 16))
+        slika = pygame.transform.scale(slika, (cellSize, cellSize))
+        slika.set_colorkey((255, 255, 0))
+        return slika
+
+    def setDefaults(self):
+        self.body = [Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]
+        self.direction = Vector2(1, 0)
+        self.newBlock = False
+        self.currentDirection = self.direction
+
+    def __init__(self):
+        self.body = [Vector2(5, 10), Vector2(4,10), Vector2(3,10)]
+        self.direction = Vector2(1, 0)
+        self.newBlock = False
+        self.currentDirection = self.direction
+
+
+        self.snakeSpriteSheet = pygame.image.load("Graphics/snake.png").convert_alpha()
+
+        self.head_up = self.getImage(16, 0)
+        self.head_down = self.getImage(48, 0)
+        self.head_right = self.getImage(0, 0)
+        self.head_left = self.getImage(32, 0)
+
+        self.tail_up = self.getImage(48, 32)
+        self.tail_down = self.getImage(16, 32)
+        self.tail_right = self.getImage(32, 32)
+        self.tail_left = self.getImage(0, 32)
+
+        self.body_vertical = self.getImage(0, 48)
+        self.body_horizontal = self.getImage(16, 48)
+
+        self.body_tr = self.getImage(0, 16)
+        self.body_tl = self.getImage(16, 16)
+        self.body_br = self.getImage(48, 16)
+        self.body_bl = self.getImage(32, 16)
+
+        self.head = self.head_right
+        self.tail = self.tail_left
+
+    def draw(self, screen):
+        self.updateHead()
+        self.updateTail()
+        for i, block in enumerate(self.body):
+            x_pos = int(block.x * cellSize)
+            y_pos = int(block.y * cellSize)
+            blockRect = pygame.Rect(x_pos, y_pos, cellSize, cellSize)
+
+
+            if i == 0:
+                screen.blit(self.head, blockRect)
+            elif i == len(self.body) - 1:
+                screen.blit(self.tail, blockRect)
+            else:
+                previousBlock = self.body[i + 1] - block
+                nextBlock = self.body[i - 1] - block
+
+                if previousBlock.x == nextBlock.x:
+                    screen.blit(self.body_vertical, blockRect)
+                elif previousBlock.y == nextBlock.y:
+                    screen.blit(self.body_horizontal, blockRect)
+                else:
+                    if previousBlock.x == -1 and nextBlock.y == -1 or previousBlock.y == -1 and nextBlock.x == -1:
+                        screen.blit(self.body_tl, blockRect)
+
+                    elif previousBlock.x == -1 and nextBlock.y == 1 or previousBlock.y == 1 and nextBlock.x == -1:
+                        screen.blit(self.body_bl, blockRect)
+                    elif previousBlock.x == 1 and nextBlock.y == -1 or previousBlock.y == -1 and nextBlock.x == 1:
+                        screen.blit(self.body_tr, blockRect)
+
+                    elif previousBlock.x == 1 and nextBlock.y == 1 or previousBlock.y == 1 and nextBlock.x == 1:
+                        screen.blit(self.body_br, blockRect)
+
+    def updateHead(self):
+        if self.currentDirection == Vector2(-1, 0): self.head = self.head_left
+        elif self.currentDirection == Vector2(1, 0): self.head = self.head_right
+        elif self.currentDirection == Vector2(-0, 1): self.head = self.head_down
+        elif self.currentDirection == Vector2(0, -1): self.head = self.head_up
+
+    def updateTail(self):
+        relacija = self.body[ len(self.body) - 1] - self.body[len(self.body) - 2]
+        if relacija == Vector2(1, 0) : self.tail = self.tail_right
+        elif relacija == Vector2(-1, 0): self.tail = self.tail_left
+        elif relacija == Vector2(0, 1): self.tail = self.tail_down
+        elif relacija == Vector2(0, -1): self.tail = self.tail_up
+
+
+    def move(self):
+        self.currentDirection = self.direction
+        if self.newBlock:
+            bodyCopy = self.body[:]  # tole nardi novo kopijo telese, z zdanjim delom
+            self.newBlock = False
+        else:
+            bodyCopy = self.body[:-1] #tole nardi novo kopijo telese, brez zdanjega dela
+        bodyCopy.insert(0, bodyCopy[0] + self.direction)
+        self.body = bodyCopy[:]
+
+    def addBlock(self):
+        self.newBlock = True

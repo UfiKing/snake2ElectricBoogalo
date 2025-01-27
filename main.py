@@ -1,124 +1,20 @@
 import sys
 import pygame
-import random
-from pygame.math import Vector2
 
-class Snake:
-    def getImage(self, x, y, scale):
-        slika = pygame.Surface((16, 16)).convert_alpha()
-        slika.blit(self.snakeSpriteSheet, (0, 0), (x, y, 16, 16))
-        slika = pygame.transform.scale(slika, (cellSize, cellSize))
-        slika.set_colorkey((255, 255, 0))
-        return slika
-
-    def __init__(self):
-        self.body = [Vector2(5, 10), Vector2(4,10), Vector2(3,10)]
-        self.direction = Vector2(1, 0)
-        self.newBlock = False
-        self.currentDirection = self.direction
-
-
-        self.snakeSpriteSheet = pygame.image.load("Graphics/snake.png").convert_alpha()
-
-        self.head_up = self.getImage(16, 0, cellSize)
-        self.head_down = self.getImage(48, 0, cellSize)
-        self.head_right = self.getImage(0, 0, cellSize)
-        self.head_left = self.getImage(32, 0, cellSize)
-
-        self.tail_up = self.getImage(48, 32, cellSize)
-        self.tail_down = self.getImage(16, 32, cellSize)
-        self.tail_right = self.getImage(32, 32, cellSize)
-        self.tail_left = self.getImage(0, 32, cellSize)
-
-        self.body_vertical = self.getImage(0, 48, cellSize)
-        self.body_horizontal = self.getImage(16, 48, cellSize)
-
-        self.body_tr = self.getImage(0, 16, cellSize)
-        self.body_tl = self.getImage(16, 16, cellSize)
-        self.body_br = self.getImage(48, 16, cellSize)
-        self.body_bl = self.getImage(32, 16, cellSize)
-
-        self.head = self.head_right
-
-    def draw(self):
-        self.updateHead()
-        self.updateTail()
-        for i, block in enumerate(self.body):
-            x_pos = int(block.x * cellSize)
-            y_pos = int(block.y * cellSize)
-            blockRect = pygame.Rect(x_pos, y_pos, cellSize, cellSize)
-
-
-            if i == 0:
-                screen.blit(self.head, blockRect)
-            elif i == len(self.body) - 1:
-                screen.blit(self.tail, blockRect)
-            else:
-                previousBlock = self.body[i + 1] - block
-                nextBlock = self.body[i - 1] - block
-
-                if previousBlock.x == nextBlock.x:
-                    screen.blit(self.body_vertical, blockRect)
-                elif previousBlock.y == nextBlock.y:
-                    screen.blit(self.body_horizontal, blockRect)
-                else:
-                    if previousBlock.x == -1 and nextBlock.y == -1 or previousBlock.y == -1 and nextBlock.x == -1:
-                        screen.blit(self.body_tl, blockRect)
-
-                    elif previousBlock.x == -1 and nextBlock.y == 1 or previousBlock.y == 1 and nextBlock.x == -1:
-                        screen.blit(self.body_bl, blockRect)
-                    elif previousBlock.x == 1 and nextBlock.y == -1 or previousBlock.y == -1 and nextBlock.x == 1:
-                        screen.blit(self.body_tr, blockRect)
-
-                    elif previousBlock.x == 1 and nextBlock.y == 1 or previousBlock.y == 1 and nextBlock.x == 1:
-                        screen.blit(self.body_br, blockRect)
-
-    def updateHead(self):
-        if self.currentDirection == Vector2(-1, 0): self.head = self.head_left
-        elif self.currentDirection == Vector2(1, 0): self.head = self.head_right
-        elif self.currentDirection == Vector2(-0, 1): self.head = self.head_down
-        elif self.currentDirection == Vector2(0, -1): self.head = self.head_up
-
-    def updateTail(self):
-        relacija = self.body[ len(self.body) - 1] - self.body[len(self.body) - 2]
-        if relacija == Vector2(1, 0) : self.tail = self.tail_right
-        elif relacija == Vector2(-1, 0): self.tail = self.tail_left
-        elif relacija == Vector2(0, 1): self.tail = self.tail_down
-        elif relacija == Vector2(0, -1): self.tail = self.tail_up
-
-
-    def move(self):
-        self.currentDirection = self.direction
-        if self.newBlock:
-            bodyCopy = self.body[:]  # tole nardi novo kopijo telese, z zdanjim delom
-            self.newBlock = False
-        else:
-            bodyCopy = self.body[:-1] #tole nardi novo kopijo telese, brez zdanjega dela
-        bodyCopy.insert(0, bodyCopy[0] + self.direction)
-        self.body = bodyCopy[:]
-
-    def addBlock(self):
-        self.newBlock = True
+from constants import cellSize, cellNumber
 
 
 
-class Fruit:
-    def __init__(self):
-        self.x = random.randint(0, cellNumber - 1 )
-        self.y = random.randint(0, cellNumber - 1)
-        self.pos = Vector2(self.x, self.y)
+pygame.init()
 
-    def drawFruit(self):
-        fruitRect = pygame.Rect(self.pos.x * cellSize, self.pos.y * cellSize, cellSize, cellSize)
-        screen.blit(jabolko, fruitRect)
-        #pygame.draw.rect(screen, (126,166,114), fruitRect)
+screen = pygame.display.set_mode( (cellSize * cellNumber, cellSize * cellNumber) )
+clock = pygame.time.Clock()
 
-    def randomize(self):
-        self.x = random.randint(0, cellNumber - 1)
-        self.y = random.randint(0, cellNumber - 1)
-        self.pos = Vector2(self.x, self.y)
 
-class main:
+SCREEN_UPDATE = pygame.USEREVENT#tle nardimo svoj event
+pygame.time.set_timer(SCREEN_UPDATE, 150)#in executamo tale event vsakih 150ms
+
+class mainGame:
     def __init__(self):
         self.snake = Snake()
         self.fruit = Fruit()
@@ -128,9 +24,9 @@ class main:
         self.collide()
         self.checkFail()
 
-    def draw(self):
-        self.fruit.drawFruit()
-        self.snake.draw()
+    def draw(self, screen):
+        self.fruit.drawFruit(screen)
+        self.snake.draw(screen)
 
     def collide(self):
         if self.fruit.pos == self.snake.body[0]:
@@ -147,59 +43,109 @@ class main:
 
 
     def gameOver(self):
-        pygame.quit()
-        sys.exit()
+        changeState(1)
+        self.snake.setDefaults()
+        self.fruit.randomize()
 
-cellSize = 64
-cellNumber = 20
+class mainScreen:
+    def __init__(self, screen):
+        self.screen = screen
+        self.state = 1
 
-pygame.init()
+        self.mainFont = pygame.font.Font('freesansbold.ttf', cellSize *2)
+        self.miniFont = pygame.font.Font('freesansbold.ttf', cellSize - (cellSize //10) )
 
-screen = pygame.display.set_mode( (cellSize * cellNumber, cellSize * cellNumber) )
-clock = pygame.time.Clock()
-jabolko = pygame.image.load("graphics/jabolko16.png").convert_alpha()
-jabolko = pygame.transform.scale(jabolko, (cellSize, cellSize))
+        self.mainText = self.mainFont.render('Main Screen', True, "#FFFFFF")
+        self.mainTextRect = self.mainText.get_rect()
 
-SCREEN_UPDATE = pygame.USEREVENT#tle nardimo svoj event
-pygame.time.set_timer(SCREEN_UPDATE, 150)#in executamo tale event vsakih 150ms
+        self.startText = self.miniFont.render("Start game", True, "#FFFFFF")
+        self.startTextRect = self.startText.get_rect()
+        self.leaderboardText = self.miniFont.render("Leaderboard", True,"#FFFFFF")
+        self.leaderboardTextRect = self.leaderboardText.get_rect(x=200)
 
-mainGame = main()
+        # set the center of the rectangular object.
+
+        self.mainTextRect.center = (screen.get_width()//2, screen.get_height() // 2 - (screen.get_height() // 4))
+
+        self.startTextRect.midleft = (self.mainTextRect.x , screen.get_height() // 2)
+        self.leaderboardTextRect.midright = (self.mainTextRect.width + self.mainTextRect.x , screen.get_height() // 2)
+
+        self.startBackgroundRect = (pygame.Rect
+                                (self.startTextRect.centerx - (self.startTextRect.width // 2) - (self.startTextRect.width // 10),
+                                self.startTextRect.centery - self.startTextRect.height,
+                                self.startTextRect.width + (self.startTextRect.width // 5),
+                                self.startTextRect.height * 2))
+
+        self.leaderboardBackgroundRect = (pygame.Rect
+                                    (self.leaderboardTextRect.centerx - (self.leaderboardTextRect.width // 2) - (
+                                                self.leaderboardTextRect.width // 10),
+                                     self.leaderboardTextRect.centery - self.leaderboardTextRect.height,
+                                     self.leaderboardTextRect.width + (self.leaderboardTextRect.width // 5),
+                                     self.leaderboardTextRect.height * 2))
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, "#555555", self.startBackgroundRect)
+        pygame.draw.rect(surface, "#005500", self.leaderboardBackgroundRect)
+        surface.blit(self.mainText, self.mainTextRect)
+        surface.blit(self.startText, self.startTextRect)
+        surface.blit(self.leaderboardText, self.leaderboardTextRect)
+        self.pressButtons()
+
+    def pressButtons(self):
+        mousePos = pygame.mouse.get_pos()
+        mouseButton = pygame.mouse.get_pressed()
+
+        if self.startBackgroundRect.topleft[0] <= mousePos[0] <= self.startBackgroundRect.bottomright[0]\
+                and self.startBackgroundRect.topleft[1] <= mousePos[1] <= self.startBackgroundRect.bottomright[1]\
+                and mouseButton[0]:
+            changeState(2)
+
+def changeState(newState):
+    logic.state = newState
+
+class logic:
+    state = 1
+    def __init__(self):
+        self.mainGame = mainGame()
+        self.mainScreen = mainScreen(screen)
 
 
+    def events(self, event):
+        if event.type == SCREEN_UPDATE and logic.state == 2:
+            self.mainGame.update()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_w or event.key == pygame.K_UP and self.mainGame.snake.currentDirection.y != 1:
+                self.mainGame.snake.direction = Vector2(0, -1)
+            if event.key == pygame.K_s or event.key == pygame.K_DOWN and self.mainGame.snake.currentDirection.y != -1:
+                self.mainGame.snake.direction = Vector2(0, 1)
+            if event.key == pygame.K_d or event.key == pygame.K_RIGHT and self.mainGame.snake.currentDirection.x != -1:
+                self.mainGame.snake.direction = Vector2(1, 0)
+            if event.key == pygame.K_a or event.key == pygame.K_LEFT and self.mainGame.snake.currentDirection.x != 1:
+                self.mainGame.snake.direction = Vector2(-1, 0)
 
+    def drawAndUpdate(self, screen):
+        if logic.state == 1:
+            self.mainScreen.draw(screen)
+        elif logic.state == 2:
+            self.mainGame.draw(screen)
+
+
+game = logic()
 
 
 while True:
     screen.fill("#AFD746")
-
-
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == SCREEN_UPDATE:
-            mainGame.update()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w and mainGame.snake.currentDirection.y != 1:
-                mainGame.snake.direction = Vector2(0, -1)
 
-            if event.key == pygame.K_s and mainGame.snake.currentDirection.y != -1:
-                mainGame.snake.direction = Vector2(0, 1)
-            if event.key == pygame.K_d and mainGame.snake.currentDirection.x != -1:
-                mainGame.snake.direction = Vector2(1, 0)
-            if event.key == pygame.K_a and mainGame.snake.currentDirection.x != 1:
-                mainGame.snake.direction = Vector2(-1, 0)
+        game.events(event)
 
-            if event.key == pygame.K_UP and mainGame.snake.currentDirection.y != 1:
-                mainGame.snake.direction = Vector2(0, -1)
-            if event.key == pygame.K_DOWN and mainGame.snake.currentDirection.y != -1:
-                mainGame.snake.direction = Vector2(0, 1)
-            if event.key == pygame.K_RIGHT and mainGame.snake.currentDirection.x != -1:
-                mainGame.snake.direction = Vector2(1, 0)
-            if event.key == pygame.K_LEFT and mainGame.snake.currentDirection.x != 1:
-                mainGame.snake.direction = Vector2(-1, 0)
+    game.drawAndUpdate(screen)
 
-    mainGame.draw()
+
+
     pygame.display.update()
     clock.tick(60)
+
