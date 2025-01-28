@@ -11,14 +11,14 @@ class Snake:
         return slika
 
     def setDefaults(self):
-        self.body = [Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]
+        self.body = [Vector2(5, 9), Vector2(4, 9), Vector2(3, 9)]
         self.direction = Vector2(1, 0)
         self.newBlock = False
         self.currentDirection = self.direction
 
 
     def __init__(self):
-        self.body = [Vector2(5, 10), Vector2(4,10), Vector2(3,10)]
+        self.body = [Vector2(5, 9), Vector2(4,9), Vector2(3,9)]
         self.direction = Vector2(1, 0)
         self.newBlock = False
         self.currentDirection = self.direction

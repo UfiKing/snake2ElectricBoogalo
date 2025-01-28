@@ -20,20 +20,60 @@ class mainGame:
     def __init__(self):
         self.snake = Snake()
         self.fruit = Fruit()
+        self.timer = 0
+        self.index = 0
+
+        self.score = 0
+
+
+        self.font = pygame.font.Font("font.ttf", int(cellSize * 1.5))
+
+        self.scoreText = self.font.render(str(self.score), False, "#FFFFFF")
+        self.scoreRect = self.scoreText.get_rect()
+
+        self.text0 = self.font.render("0", False, "#FFFFFF")
+        self.text1 = self.font.render("1", False, "#FFFFFF")
+        self.text2 = self.font.render("2", False, "#FFFFFF")
+        self.text3 = self.font.render("3", False, "#FFFFFF")
+
+        self.text0Rect = self.text0.get_rect()
+        self.text1Rect = self.text1.get_rect()
+        self.text2Rect = self.text2.get_rect()
+        self.text3Rect = self.text3.get_rect()
+
+        self.text3Rect.center = screen.get_width() / 2, 9.5 * cellSize
+        self.text2Rect.center = screen.get_width() / 2, 9.5 * cellSize
+        self.text1Rect.center = screen.get_width() / 2, 9.5 * cellSize
 
     def update(self):
-        self.snake.move()
-        self.collide()
-        self.checkFail()
+
+        if self.index == 19:
+            self.snake.move()
+            self.collide()
+            self.checkFail()
+        else:
+            self.index +=1
+
+
 
     def draw(self, screen):
         self.fruit.drawFruit(screen)
         self.snake.draw(screen)
+        if 0 < self.index <= 6:
+            screen.blit(self.text3, self.text3Rect)
+        elif 6 < self.index <= 12:
+            screen.blit(self.text2, self.text2Rect)
+        elif 12 < self.index <= 18:
+            screen.blit(self.text1, self.text1Rect)
+        screen.blit(self.scoreText, self.scoreRect)
 
     def collide(self):
         if self.fruit.pos == self.snake.body[0]:
             self.fruit.randomize(self.snake.body)
             self.snake.addBlock()
+            self.score += 1
+            self.scoreText = self.font.render(str(self.score), False, "#FFFFFF")
+            self.scoreRect = self.scoreText.get_rect()
 
     def checkFail(self):
         if not 0 <= self.snake.body[0].x < cellNumber or not 0 <= self.snake.body[0].y < cellNumber:
@@ -45,9 +85,14 @@ class mainGame:
 
 
     def gameOver(self):
-        changeState(1)
+        changeState(3)
         self.snake.setDefaults()
-        self.fruit.randomize(self.snake.body)
+        self.fruit.setDefaults()
+        self.index = 0
+        self.score = 0
+
+        self.scoreText = self.font.render(str(self.score), False, "#FFFFFF")
+        self.scoreRect = self.scoreText.get_rect()
 
 class mainScreen:
     def __init__(self, screen):
@@ -133,7 +178,7 @@ class gameOverScreen:
         self.retryTextRect.center = (self.leaderBoardTextRect.centerx, self.leaderBoardTextRect.y + int(self.mainTextRect.height * 1.5))
 
 
-        self.menuBackgroundRect = pygame.Rect(int(self.menuTextRect.x * 0.9), int(self.menuTextRect.y * 0.96) , self.menuTextRect.width + self.menuTextRect.width * 0.1,
+        self.menuBackgroundRect = pygame.Rect(int(self.menuTextRect.x * 0.935), int(self.menuTextRect.y * 0.97) , self.menuTextRect.width + self.menuTextRect.width * 0.1,
                                               self.menuTextRect.height * 2)
 
         self.leaderBoardBackgroundRect = pygame.Rect(int(self.leaderBoardTextRect.x * 0.94),
@@ -141,21 +186,35 @@ class gameOverScreen:
                                                      self.leaderBoardTextRect.width + self.leaderBoardTextRect.width * 0.1,
                                                     self.leaderBoardTextRect.height * 2)
 
+        self.retryBackgroundRect = pygame.Rect(int(self.retryTextRect.x * 0.94),
+                                                     int(self.retryTextRect.y * 0.97),
+                                                     self.retryTextRect.width + self.retryTextRect.width * 0.40,
+                                                     self.retryTextRect.height * 2.5)
 
     def draw(self, surface):
         surface.blit(self.mainText, self.mainTextRect)
-        #pygame.draw.rect(surface, "#555555", self.menuBackgroundRect)
+        pygame.draw.rect(surface, "#555555", self.menuBackgroundRect)
         pygame.draw.rect(surface, "#555555", self.leaderBoardBackgroundRect)
+        pygame.draw.rect(surface, "#555555", self.retryBackgroundRect)
 
         surface.blit(self.menuText, self.menuTextRect)
         surface.blit(self.leaderBoardText, self.leaderBoardTextRect)
         surface.blit(self.retryText, self.retryTextRect)
 
+        self.pressButtons()
 
+    def pressButtons(self):
+        mousePos = pygame.mouse.get_pos()
+        mouseButton = pygame.mouse.get_pressed()
+        if self.retryBackgroundRect.topleft[0] <= mousePos[0] <= self.retryBackgroundRect.bottomright[0] and self.retryBackgroundRect.topleft[1] <= mousePos[1] <= self.retryBackgroundRect.bottomright[1] and mouseButton[0]:
+            changeState(2)
+        elif self.menuBackgroundRect.topleft[0] <= mousePos[0] <= self.menuBackgroundRect.bottomright[0] and \
+                self.menuBackgroundRect.topleft[1] <= mousePos[1] <= self.menuBackgroundRect.bottomright[1] and mouseButton[0]:
+            changeState(1)
 
 
 class logic:
-    state = 3
+    state = 1
     def __init__(self):
         self.mainGame = mainGame()
         self.mainScreen = mainScreen(screen)
@@ -173,7 +232,7 @@ class logic:
             elif (event.key == pygame.K_d or event.key == pygame.K_RIGHT) and self.mainGame.snake.currentDirection.x != -1:
                 self.mainGame.snake.direction = Vector2(1, 0)
             elif (event.key == pygame.K_a or event.key == pygame.K_LEFT) and self.mainGame.snake.currentDirection.x != 1:
-                print(self.mainGame.snake.currentDirection)
+
                 self.mainGame.snake.direction = Vector2(-1, 0)
 
     def drawAndUpdate(self, screen):
