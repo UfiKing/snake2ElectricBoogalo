@@ -236,18 +236,17 @@ class nameScreen:
         self.nameTextRect.bottomleft = self.inputRect.bottomleft
         self.nameTextRect.y -= cellSize
 
-        self.submitText = self.font.render("Submit", False, "#FFFFFF")
+        self.submitText = self.font.render("Go!", False, "#FFFFFF")
         self.submitTextRect = self.submitText.get_rect()
 
+        self.submitTextRect.y = self.defaultTextRect.y + cellSize * 4
+        self.submitTextRect.centerx = self.inputRect.centerx
+        self.submitTextRect.width += cellSize * 2
+        self.submitTextRect.height += cellSize
 
-
-
-
-
-    def updateAndDraw(self, surface):
+    def update(self, surface):
         mousePos = pygame.mouse.get_pos()
         mousePressed = pygame.mouse.get_pressed()
-
 
         if self.inputRect.topleft[0] <= mousePos[0] <= self.inputRect.bottomright[0] and self.inputRect.topleft[1] <= mousePos[1] <= \
                 self.inputRect.bottomright[1] :
@@ -285,7 +284,26 @@ class nameScreen:
         self.nameTextRect.bottomleft = self.inputRect.bottomleft
         self.nameTextRect.y -= cellSize
 
+        self.submitTextRect.centerx -= cellSize
+        self.submitTextRect.y -= cellSize * .5
+        if self.submitTextRect.topleft[0] <= mousePos[0] <= self.submitTextRect.bottomright[0] and \
+                self.submitTextRect.topleft[1] <= mousePos[1] <= self.submitTextRect.bottomright[1]:
+            pygame.draw.rect(surface, "#30FF30", self.submitTextRect)
+            if mousePressed[0]:
+                self.goToGame()
+        else:
+            pygame.draw.rect(surface, "#30af30", self.submitTextRect)
+        self.submitTextRect.centerx += cellSize
+        self.submitTextRect.y += cellSize * 0.5
 
+        screen.blit(self.submitText, self.submitTextRect)
+
+    def goToGame(self):
+        if len(self.name) < 1:
+            username = "anon"
+        else:
+            username = "".join(self.name)
+        print(username)
 
 class logic:
     state = 4
