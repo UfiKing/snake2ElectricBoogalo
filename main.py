@@ -216,147 +216,74 @@ class gameOverScreen:
 
 class nameScreen:
     def __init__(self):
-        self.font = pygame.font.Font('font.ttf', cellSize * 2)
+        self.font = pygame.font.Font('font.ttf', int(cellSize *1))
 
-        #self.A = self.font.render("A", False, "#FFFFFF")
-        self.A = self.font.render("A", False, "#FFFFFF")
-        self.B = self.font.render("B", False, "#FFFFFF")
-        self.C = self.font.render("C", False, "#FFFFFF")
-        self.Č = self.font.render("Č", False, "#FFFFFF")
-        self.D = self.font.render("D", False, "#FFFFFF")
-        self.E = self.font.render("E", False, "#FFFFFF")
-        self.F = self.font.render("F", False, "#FFFFFF")
-        self.G = self.font.render("G", False, "#FFFFFF")
-        self.H = self.font.render("H", False, "#FFFFFF")
-        self.I = self.font.render("I", False, "#FFFFFF")
-        self.J = self.font.render("J", False, "#FFFFFF")
-        self.K = self.font.render("K", False, "#FFFFFF")
-        self.L = self.font.render("L", False, "#FFFFFF")
-        self.M = self.font.render("M", False, "#FFFFFF")
-        self.N = self.font.render("N", False, "#FFFFFF")
-        self.O = self.font.render("O", False, "#FFFFFF")
-        self.P = self.font.render("P", False, "#FFFFFF")
-        self.Q = self.font.render("Q", False, "#FFFFFF")
-        self.R = self.font.render("R", False, "#FFFFFF")
-        self.S = self.font.render("S", False, "#FFFFFF")
-        self.Š = self.font.render("Š", False, "#FFFFFF")
-        self.T = self.font.render("T", False, "#FFFFFF")
-        self.U = self.font.render("U", False, "#FFFFFF")
-        self.V = self.font.render("V", False, "#FFFFFF")
-        self.Z = self.font.render("Z", False, "#FFFFFF")
-        self.Ž = self.font.render("Ž", False, "#FFFFFF")
+        self.middle = (screen.get_height() // 2 // cellSize) - 1
 
-        self.middle = (screen.get_height() //2 //cellSize ) - 1
+        self.name = []
+        self.pressed = False
+        self.inputRect = pygame.Rect(cellSize * 2, cellSize * self.middle - cellSize * 5, cellSize * 18, cellSize * 3)
 
-        self.ARect = pygame.Rect(cellSize, cellSize * self.middle, cellSize * 2, cellSize * 2)
+        self.nameText = self.font.render("".join(self.name), False, "#FFFFFF")
+        self.nameTextRect = self.nameText.get_rect()
+        self.backspace = False
 
-        self.BRect = pygame.Rect(cellSize * 4, cellSize * self.middle, cellSize * 2, cellSize * 2)
-        self.CRect = pygame.Rect(cellSize * 7, cellSize * self.middle, cellSize * 2, cellSize * 2)
-        self.ČRect = pygame.Rect(cellSize * 10, cellSize * self.middle, cellSize * 2, cellSize * 2)
-        self.DRect = pygame.Rect(cellSize * 13, cellSize * self.middle, cellSize * 2, cellSize * 2)
-        self.ERect = pygame.Rect(cellSize * 16, cellSize * self.middle, cellSize * 2,
-                                 cellSize * 2)
-        self.FRect = pygame.Rect(cellSize * 19, cellSize * self.middle, cellSize * 2,
-                                 cellSize * 2)
+        self.defaultText = self.font.render("ime", False, "#FFFFFF")
+        self.defaultTextRect = self.defaultText.get_rect()
+        self.defaultTextRect.bottomleft = self.inputRect.bottomleft
+        self.defaultTextRect.y -= cellSize
 
-        self.GRect = pygame.Rect(cellSize, cellSize * self.middle + cellSize * 3  , cellSize * 2,
-                                 cellSize * 2)
-        self.HRect = pygame.Rect(cellSize * 4, cellSize * self.middle + cellSize * 3, cellSize * 2,
-                                 cellSize * 2)
-        self.IRect = pygame.Rect(cellSize * 7, cellSize * self.middle + cellSize * 3, cellSize * 2,
-                                 cellSize * 2)
-        self.JRect = pygame.Rect(cellSize * 10, cellSize * self.middle + cellSize * 3, cellSize * 2,
-                                 cellSize * 2)
-        self.KRect = pygame.Rect(cellSize * 13, cellSize * self.middle + cellSize * 3, cellSize * 2,
-                                 cellSize * 2)
-        self.LRect = pygame.Rect(cellSize * 16, cellSize * self.middle + cellSize * 3, cellSize * 2,
-                                 cellSize * 2)
-        self.MRect = pygame.Rect(cellSize * 19, cellSize * self.middle + cellSize * 3, cellSize * 2,
-                                 cellSize * 2)
+        self.nameTextRect.bottomleft = self.inputRect.bottomleft
+        self.nameTextRect.y -= cellSize
 
-        self.NRect = pygame.Rect(cellSize, cellSize * self.middle + cellSize * 6,
-                                 cellSize * 2,
-                                 cellSize * 2)
-        self.ORect = pygame.Rect(cellSize * 4, cellSize * self.middle + cellSize * 6,
-                                 cellSize * 2,
-                                 cellSize * 2)
-        self.PRect = pygame.Rect(cellSize * 7, cellSize * self.middle + cellSize * 6,
-                                 cellSize * 2,
-                                 cellSize * 2)
-        self.RRect = pygame.Rect(cellSize * 10, cellSize * self.middle + cellSize * 6,
-                                 cellSize * 2,
-                                 cellSize * 2)
-        self.SRect = pygame.Rect(cellSize * 13, cellSize * self.middle + cellSize * 6,
-                                 cellSize * 2,
-                                 cellSize * 2)
-        self.ŠRect = pygame.Rect(cellSize * 16, cellSize * self.middle + cellSize * 6,
-                                 cellSize * 2,
-                                 cellSize * 2)
-        self.TRect = pygame.Rect(cellSize * 19, cellSize * self.middle + cellSize * 6,
-                                 cellSize * 2,
-                                 cellSize * 2)
-
-        self.URect = pygame.Rect(cellSize, cellSize * self.middle + cellSize * 9,
-                                 cellSize * 2,
-                                 cellSize * 2)
-        self.VRect = pygame.Rect(cellSize * 4, cellSize * self.middle + cellSize * 9,
-                                 cellSize * 2,
-                                 cellSize * 2)
-        self.ZRect = pygame.Rect(cellSize * 16, cellSize * self.middle + cellSize * 9,
-                                 cellSize * 2,
-                                 cellSize * 2)
-        self.ŽRect = pygame.Rect(cellSize * 19, cellSize * self.middle + cellSize * 9,
-                                 cellSize * 2,
-                                 cellSize * 2)
-        self.SpaceRect = pygame.Rect(cellSize * 7, cellSize * self.middle + cellSize * 9,
-                                 cellSize * 8,
-                                 cellSize * 2)
-        #self.ŠRect = pygame.Rect(cellSize * 16, cellSize * (screen.get_height() // 2 // cellSize) + cellSize * 6,
-                                 #cellSize * 2,
-                                 #cellSize * 2)
-        #self.TRect = pygame.Rect(cellSize * 19, cellSize * (screen.get_height() // 2 // cellSize) + cellSize * 6,
-                                 #cellSize * 2,
-                                 #cellSize * 2)
-
-
-
-    def draw(self, screen):
-        colour = "#869d22"
-
-
-
-        screen.blit(self.A, self.ARect)
-        screen.blit(self.B, self.BRect)
-        screen.blit(self.C, self.CRect)
-        screen.blit(self.Č, self.ČRect)
-        screen.blit(self.D, self.DRect)
-        screen.blit(self.E, self.ERect)
-        screen.blit(self.F, self.FRect)
-
-        screen.blit(self.G, self.GRect)
-        screen.blit(self.H, self.HRect)
-        screen.blit(self.I, self.IRect)
-        screen.blit(self.J, self.JRect)
-        screen.blit(self.K, self.KRect)
-        screen.blit(self.L, self.LRect)
-        screen.blit(self.M, self.MRect)
-
-        screen.blit(self.N, self.NRect)
-        screen.blit(self.O, self.ORect)
-        screen.blit(self.P, self.PRect)
-        screen.blit(self.R, self.RRect)
-        screen.blit(self.S, self.SRect)
-        screen.blit(self.Š, self.ŠRect)
-        screen.blit(self.T, self.TRect)
-
-        screen.blit(self.U, self.URect)
-        screen.blit(self.V, self.VRect)
-        screen.blit(self.Z, self.ZRect)
-        screen.blit(self.Ž, self.ŽRect)
+        self.submitText = self.font.render("Submit", False, "#FFFFFF")
+        self.submitTextRect = self.submitText.get_rect()
 
 
 
 
+
+
+    def updateAndDraw(self, surface):
+        mousePos = pygame.mouse.get_pos()
+        mousePressed = pygame.mouse.get_pressed()
+
+
+        if self.inputRect.topleft[0] <= mousePos[0] <= self.inputRect.bottomright[0] and self.inputRect.topleft[1] <= mousePos[1] <= \
+                self.inputRect.bottomright[1] :
+            #this checks if the mouse is inside the text enter box
+            if not self.pressed:
+                #if it is and the pressed variable isnt on, it colours the box the hover colour
+                pygame.draw.rect(surface, "#AF65FA", self.inputRect)
+            if mousePressed[0]:
+                #if its inside and the user presses the mouse, it sets the pressed variable to True
+                self.pressed = True
+        else:
+            # if it isnt inside the box draw the default colour
+            pygame.draw.rect(screen, "#888888", self.inputRect)
+
+        if self.pressed:
+            #if the button is pressed, draw the pressed colour (overwriting any colour drawn before)
+            pygame.draw.rect(surface, "#000000", self.inputRect)
+
+        #if the name list is less than 1 (so its empty and no name has been entered yet)
+        #display the default text (ime)
+        #else display the text inputed by the user
+        if len(self.name) < 1:
+            screen.blit(self.defaultText, self.defaultTextRect)
+        else:
+            screen.blit(self.nameText, self.nameTextRect)
+
+        #if the user presses outside the input text thingi, set self.pressed to false
+        if (self.inputRect.topleft[0] > mousePos[0] or mousePos[0] > self.inputRect.bottomright[0] or self.inputRect.topleft[1] > mousePos[1] or \
+                mousePos[1] > self.inputRect.bottomright[1]) and mousePressed[0]:
+            self.pressed = False
+
+        #this rerenders the text
+        self.nameText = self.font.render("".join(self.name), False, "#FFFFFF")
+        self.nameTextRect = self.nameText.get_rect()
+        self.nameTextRect.bottomleft = self.inputRect.bottomleft
+        self.nameTextRect.y -= cellSize
 
 
 
@@ -379,8 +306,17 @@ class logic:
             elif (event.key == pygame.K_d or event.key == pygame.K_RIGHT) and self.mainGame.snake.currentDirection.x != -1:
                 self.mainGame.snake.direction = Vector2(1, 0)
             elif (event.key == pygame.K_a or event.key == pygame.K_LEFT) and self.mainGame.snake.currentDirection.x != 1:
-
                 self.mainGame.snake.direction = Vector2(-1, 0)
+        if event.type != SCREEN_UPDATE:
+            #print(pygame.event.event_name(event.type))
+            pass
+        if event.type == pygame.TEXTINPUT and self.nameScreen.pressed:
+            print(pygame.event.event_name(event.type))
+            print(event.text)
+            self.nameScreen.name.append(event.text)
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE and len(self.nameScreen.name) > 0 and self.nameScreen.pressed:
+            self.nameScreen.name.pop()
+            print("back")
 
     def drawAndUpdate(self, screen):
         if logic.state == 1:
@@ -390,7 +326,7 @@ class logic:
         elif logic.state == 3:
             self.gameOverScreen.draw(screen)
         elif logic.state == 4:
-            self.nameScreen.draw(screen)
+            self.nameScreen.update(screen)
 
 
 

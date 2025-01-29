@@ -1,0 +1,130 @@
+        screen.blit(self.A, self.ARect)
+        screen.blit(self.B, self.BRect)
+        screen.blit(self.C, self.CRect)
+        #screen.blit(self.Č, self.ČRect)
+        screen.blit(self.D, self.DRect)
+        screen.blit(self.E, self.ERect)
+        screen.blit(self.F, self.FRect)
+
+        screen.blit(self.G, self.GRect)
+        screen.blit(self.H, self.HRect)
+        screen.blit(self.I, self.IRect)
+        screen.blit(self.J, self.JRect)
+        screen.blit(self.K, self.KRect)
+        screen.blit(self.L, self.LRect)
+        screen.blit(self.M, self.MRect)
+
+        screen.blit(self.N, self.NRect)
+        screen.blit(self.O, self.ORect)
+        screen.blit(self.P, self.PRect)
+        screen.blit(self.R, self.RRect)
+        screen.blit(self.S, self.SRect)
+        #screen.blit(self.Š, self.ŠRect)
+        screen.blit(self.T, self.TRect)
+
+        screen.blit(self.U, self.URect)
+        screen.blit(self.V, self.VRect)
+        screen.blit(self.Z, self.ZRect)
+        #screen.blit(self.Ž, self.ŽRect)
+
+        screen.blit(self.Space, self.SpaceRect)
+        screen.blit(self.Go, self.GoRect)
+
+        self.A = self.font.render("A", False, "#FFFFFF")
+        self.B = self.font.render("B", False, "#FFFFFF")
+        self.C = self.font.render("C", False, "#FFFFFF")
+
+        self.D = self.font.render("D", False, "#FFFFFF")
+        self.E = self.font.render("E", False, "#FFFFFF")
+        self.F = self.font.render("F", False, "#FFFFFF")
+        self.G = self.font.render("G", False, "#FFFFFF")
+        self.H = self.font.render("H", False, "#FFFFFF")
+        self.I = self.font.render("I", False, "#FFFFFF")
+        self.J = self.font.render("J", False, "#FFFFFF")
+        self.K = self.font.render("K", False, "#FFFFFF")
+        self.L = self.font.render("L", False, "#FFFFFF")
+        self.M = self.font.render("M", False, "#FFFFFF")
+        self.N = self.font.render("N", False, "#FFFFFF")
+        self.O = self.font.render("O", False, "#FFFFFF")
+        self.P = self.font.render("P", False, "#FFFFFF")
+        self.Q = self.font.render("Q", False, "#FFFFFF")
+        self.R = self.font.render("R", False, "#FFFFFF")
+        self.S = self.font.render("S", False, "#FFFFFF")
+
+        self.T = self.font.render("T", False, "#FFFFFF")
+        self.U = self.font.render("U", False, "#FFFFFF")
+        self.V = self.font.render("V", False, "#FFFFFF")
+        self.Z = self.font.render("Z", False, "#FFFFFF")
+
+        self.Space = self.font.render("Space", False, "#FFFFFF")
+        self.Go = self.font.render("Go", False, "#FFFFFF")
+        self.middle = (screen.get_height() //2 //cellSize ) - 1
+
+        self.ARect = pygame.Rect(cellSize, cellSize * self.middle, cellSize * 2, cellSize * 2)
+
+        self.BRect = pygame.Rect(cellSize * 4, cellSize * self.middle, cellSize * 2, cellSize * 2)
+        self.CRect = pygame.Rect(cellSize * 7, cellSize * self.middle, cellSize * 2, cellSize * 2)
+        #self.ČRect = pygame.Rect(cellSize * 10, cellSize * self.middle, cellSize * 2, cellSize * 2)
+        self.DRect = pygame.Rect(cellSize * 10, cellSize * self.middle, cellSize * 2, cellSize * 2)
+        self.ERect = pygame.Rect(cellSize * 13, cellSize * self.middle, cellSize * 2,
+                                 cellSize * 2)
+        self.FRect = pygame.Rect(cellSize * 16, cellSize * self.middle, cellSize * 2,
+                                 cellSize * 2)
+        self.GRect = pygame.Rect(cellSize * 19, cellSize * self.middle, cellSize * 2,
+                                 cellSize * 2)
+
+        self.HRect = pygame.Rect(cellSize , cellSize * self.middle + cellSize * 3, cellSize * 2,
+                                 cellSize * 2)
+        self.IRect = pygame.Rect(cellSize * 4, cellSize * self.middle + cellSize * 3, cellSize * 2,
+                                 cellSize * 2)
+        self.JRect = pygame.Rect(cellSize * 7, cellSize * self.middle + cellSize * 3, cellSize * 2,
+                                 cellSize * 2)
+        self.KRect = pygame.Rect(cellSize * 10, cellSize * self.middle + cellSize * 3, cellSize * 2,
+                                 cellSize * 2)
+        self.LRect = pygame.Rect(cellSize * 13, cellSize * self.middle + cellSize * 3, cellSize * 2,
+                                 cellSize * 2)
+        self.MRect = pygame.Rect(cellSize * 16, cellSize * self.middle + cellSize * 3, cellSize * 2,
+                                 cellSize * 2)
+
+        self.NRect = pygame.Rect(cellSize * 19, cellSize * self.middle + cellSize * 3, cellSize * 2,
+                                 cellSize * 2)
+
+        self.ORect = pygame.Rect(cellSize, cellSize * self.middle + cellSize * 6,
+                                 cellSize * 2,
+                                 cellSize * 2)
+        self.PRect = pygame.Rect(cellSize * 4, cellSize * self.middle + cellSize * 6,
+                                 cellSize * 2,
+                                 cellSize * 2)
+        self.RRect = pygame.Rect(cellSize * 7, cellSize * self.middle + cellSize * 6,
+                                 cellSize * 2,
+                                 cellSize * 2)
+        self.SRect = pygame.Rect(cellSize * 10, cellSize * self.middle + cellSize * 6,
+                                 cellSize * 2,
+                                 cellSize * 2)
+
+        self.TRect = pygame.Rect(cellSize * 13, cellSize * self.middle + cellSize * 6,
+                                 cellSize * 2,
+                                 cellSize * 2)
+        self.URect = pygame.Rect(cellSize * 16, cellSize * self.middle + cellSize * 6,
+                                 cellSize * 2,
+                                 cellSize * 2)
+        self.VRect = pygame.Rect(cellSize * 19, cellSize * self.middle + cellSize * 6,
+                                 cellSize * 2,
+                                 cellSize * 2)
+
+        self.ZRect = pygame.Rect(cellSize, cellSize * self.middle + cellSize * 9,
+                                 cellSize * 2,
+                                 cellSize * 2)
+
+        self.SpaceRect = pygame.Rect(cellSize * 4, cellSize * self.middle + cellSize * 9,
+                                 cellSize * 11,
+                                 cellSize * 2)
+
+        self.GoRect = pygame.Rect(cellSize * 16, cellSize * self.middle + cellSize * 9,
+                                     cellSize * 4,
+                                     cellSize * 2)
+
+        self.buttons = [self.ARect, self.BRect, self.CRect, self.DRect, self.ERect, self.FRect, self.GRect, self.HRect,
+                        self.IRect, self.JRect, self.KRect, self.LRect, self.MRect, self.NRect, self.ORect, self.PRect,
+                        self.RRect, self.SRect, self.TRect, self.URect, self.VRect, self.ZRect,
+                        self.SpaceRect, self.GoRect]
