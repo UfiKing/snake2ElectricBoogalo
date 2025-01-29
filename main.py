@@ -4,8 +4,10 @@ from snake import Snake
 from fruit import Fruit
 from pygame import Vector2
 from constants import cellSize, cellNumber
+import sqlite3
 
-
+connection = sqlite3.connect("leaderboard.db")
+cursor = connection.cursor()
 
 pygame.init()
 
@@ -16,6 +18,25 @@ clock = pygame.time.Clock()
 SCREEN_UPDATE = pygame.USEREVENT#tle nardimo svoj event
 pygame.time.set_timer(SCREEN_UPDATE, 150)#in executamo tale event vsakih 150ms
 
+
+
+def changeState(newState):
+    logic.state = newState
+
+def changeUsername(newUsername):
+    logic.name = newUsername
+
+def addToDB(name, score):
+    data = [name, score]
+    print(type(name))
+    cursor.execute("INSERT INTO leaderboard (name, score) VALUES (?, ?)", data)
+    connection.commit()
+
+def updateDB(name, score):
+    data = [name, score]
+    cursor.execute("UPDATE `movies` SET score=? WHERE name=?", data)
+    connection.commit()
+
 class mainGame:
     def __init__(self):
         self.snake = Snake()
@@ -23,6 +44,7 @@ class mainGame:
         self.timer = 0
         self.index = 0
         self.score = 0
+
 
         self.font = pygame.font.Font("font.ttf", int(cellSize * 1.5))
 
@@ -54,8 +76,6 @@ class mainGame:
         else:
             self.index +=1
 
-
-
     def draw(self, screen):
         self.fruit.drawFruit(screen)
         self.snake.draw(screen)
@@ -84,9 +104,9 @@ class mainGame:
             if block == self.snake.body[0]:
                 self.gameOver()
 
-
     def gameOver(self):
         changeState(3)
+        addToDB(logic.name, self.score)
         self.snake.setDefaults()
         self.fruit.setDefaults()
         self.index = 0
@@ -95,6 +115,7 @@ class mainGame:
         self.scoreText = self.font.render(str(self.score), False, "#FFFFFF")
         self.scoreRect = self.scoreText.get_rect()
         self.scoreRect.topleft = (10, 10)
+
 
 class mainScreen:
     def __init__(self, screen):
@@ -147,10 +168,7 @@ class mainScreen:
         if self.startBackgroundRect.topleft[0] <= mousePos[0] <= self.startBackgroundRect.bottomright[0]\
                 and self.startBackgroundRect.topleft[1] <= mousePos[1] <= self.startBackgroundRect.bottomright[1]\
                 and mouseButton[0]:
-            changeState(2)
-
-def changeState(newState):
-    logic.state = newState
+            changeState(4)
 
 class gameOverScreen:
     def __init__(self):
@@ -212,17 +230,19 @@ class gameOverScreen:
             changeState(2)
         elif self.menuBackgroundRect.topleft[0] <= mousePos[0] <= self.menuBackgroundRect.bottomright[0] and \
                 self.menuBackgroundRect.topleft[1] <= mousePos[1] <= self.menuBackgroundRect.bottomright[1] and mouseButton[0]:
-            changeState(1)
+            changeState(4)
 
 class nameScreen:
     def __init__(self):
+
+
         self.font = pygame.font.Font('font.ttf', int(cellSize *1))
 
         self.middle = (screen.get_height() // 2 // cellSize) - 1
 
         self.name = []
         self.pressed = False
-        self.inputRect = pygame.Rect(cellSize * 2, cellSize * self.middle - cellSize * 5, cellSize * 18, cellSize * 3)
+        self.inputRect = pygame.Rect(cellSize * 2, cellSize * self.middle - cellSize * 2, cellSize * 18, cellSize * 3)
 
         self.nameText = self.font.render("".join(self.name), False, "#FFFFFF")
         self.nameTextRect = self.nameText.get_rect()
@@ -289,24 +309,31 @@ class nameScreen:
         if self.submitTextRect.topleft[0] <= mousePos[0] <= self.submitTextRect.bottomright[0] and \
                 self.submitTextRect.topleft[1] <= mousePos[1] <= self.submitTextRect.bottomright[1]:
             pygame.draw.rect(surface, "#30FF30", self.submitTextRect)
+
             if mousePressed[0]:
-                self.goToGame()
+                self.submit()
         else:
             pygame.draw.rect(surface, "#30af30", self.submitTextRect)
+
         self.submitTextRect.centerx += cellSize
         self.submitTextRect.y += cellSize * 0.5
 
         screen.blit(self.submitText, self.submitTextRect)
 
-    def goToGame(self):
+    def submit(self):
         if len(self.name) < 1:
             username = "anon"
         else:
             username = "".join(self.name)
-        print(username)
+        logic.name = username
+        changeState(2)
+
+
+
 
 class logic:
-    state = 4
+    state = 1
+    name = "anon"
     def __init__(self):
         self.mainGame = mainGame()
         self.mainScreen = mainScreen(screen)
