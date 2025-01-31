@@ -21,6 +21,7 @@ pygame.time.set_timer(SCREEN_UPDATE, 150)#in executamo tale event vsakih 150ms
 
 
 def changeState(newState):
+    logic.previousState = logic.state
     logic.state = newState
     getLeaderboard()
 
@@ -33,16 +34,20 @@ def addToDB(name, score):
     cursor.execute("INSERT INTO leaderboard (name, score) VALUES (?, ?)", data)
     connection.commit()
 
-def updateDB(name, score):
-    data = [name, score]
-    cursor.execute("UPDATE `movies` SET score=? WHERE name=?", data)
+def updateDB(id, score):
+    data = [score, id]
+    cursor.execute("UPDATE leaderboard SET score=? WHERE id=?", data)
     connection.commit()
-
 
 def getLeaderboard():
     result = cursor.execute("SELECT * FROM leaderboard ORDER BY score DESC limit 10").fetchall()
-
     return result
+
+def getTopId():
+    ids = cursor.execute("SELECT * FROM leaderboard ORDER BY id DESC limit 10").fetchall()
+    print(ids)
+    return ids[0][0]
+
 class mainGame:
     def __init__(self):
         self.snake = Snake()
@@ -112,7 +117,15 @@ class mainGame:
 
     def gameOver(self):
         changeState(3)
-        addToDB(logic.name, self.score)
+
+        if logic.retry:
+            updateDB(logic.id, self.score)
+        else:
+            addToDB(logic.name, self.score)
+        print(logic.retry)
+        print(logic.id)
+        logic.id = getTopId()
+        print(logic.id)
         self.snake.setDefaults()
         self.fruit.setDefaults()
         self.index = 0
@@ -175,6 +188,11 @@ class mainScreen:
                 and mouseButton[0]:
             changeState(4)
 
+        if self.leaderboardBackgroundRect.topleft[0] <= mousePos[0] <= self.leaderboardBackgroundRect.bottomright[0]\
+                and self.leaderboardBackgroundRect.topleft[1] <= mousePos[1] <= self.leaderboardBackgroundRect.bottomright[1]\
+                and mouseButton[0]:
+            changeState(5)
+
 class gameOverScreen:
     def __init__(self):
         self.mainFont = pygame.font.Font('font.ttf', int(cellSize * 1.5))
@@ -194,27 +212,27 @@ class gameOverScreen:
         self.retryText = self.miniFont.render("Retry", False, "#FFFFFF")
         self.retryTextRect = self.retryText.get_rect()
 
-        self.mainTextRect.center = (screen.get_width()//2, screen.get_height() // 2 - (screen.get_height() // 6))
+        self.mainTextRect.center = (cellNumber //2 * cellSize, cellNumber // 3 * cellSize - cellSize * 2)
 
-        self.menuTextRect.center = (self.mainTextRect.centerx, self.mainTextRect.y + (self.mainTextRect.height * 2))
+        self.menuTextRect.center = (self.mainTextRect.centerx, self.mainTextRect.y  + cellSize * 4 )
 
-        self.leaderBoardTextRect.center = (self.menuTextRect.centerx, self.menuTextRect.y + int(self.mainTextRect.height * 1.5))
+        self.leaderBoardTextRect.center = (self.menuTextRect.centerx, self.menuTextRect.y + cellSize * 3 )
 
-        self.retryTextRect.center = (self.leaderBoardTextRect.centerx, self.leaderBoardTextRect.y + int(self.mainTextRect.height * 1.5))
+        self.retryTextRect.center = (self.leaderBoardTextRect.centerx, self.leaderBoardTextRect.y + cellSize * 3 )
 
 
-        self.menuBackgroundRect = pygame.Rect(int(self.menuTextRect.x * 0.935), int(self.menuTextRect.y * 0.97) , self.menuTextRect.width + self.menuTextRect.width * 0.1,
-                                              self.menuTextRect.height * 2)
+        self.menuBackgroundRect = pygame.Rect(self.menuTextRect.x - cellSize * 0.4, self.menuTextRect.y - cellSize * 0.4, self.menuTextRect.width + cellSize * 0.8,
+                                              self.menuTextRect.height + cellSize * 0.8)
 
-        self.leaderBoardBackgroundRect = pygame.Rect(int(self.leaderBoardTextRect.x * 0.94),
-                                                     int(self.leaderBoardTextRect.y * 0.97),
-                                                     self.leaderBoardTextRect.width + self.leaderBoardTextRect.width * 0.1,
-                                                    self.leaderBoardTextRect.height * 2)
+        self.leaderBoardBackgroundRect = pygame.Rect(self.leaderBoardTextRect.x - cellSize * 0.4,
+                                              self.leaderBoardTextRect.y - cellSize * 0.4,
+                                              self.leaderBoardTextRect.width + cellSize * 0.8,
+                                              self.leaderBoardTextRect.height + cellSize * 0.8)
 
-        self.retryBackgroundRect = pygame.Rect(int(self.retryTextRect.x * 0.94),
-                                                     int(self.retryTextRect.y * 0.97),
-                                                     self.retryTextRect.width + self.retryTextRect.width * 0.40,
-                                                     self.retryTextRect.height * 2.5)
+        self.retryBackgroundRect = pygame.Rect(self.retryTextRect.x - cellSize * 0.4,
+                                                     self.retryTextRect.y - cellSize * 0.4,
+                                                     self.retryTextRect.width + cellSize * 0.8,
+                                                     self.retryTextRect.height + cellSize * 0.8)
 
     def draw(self, surface):
         surface.blit(self.mainText, self.mainTextRect)
@@ -233,9 +251,14 @@ class gameOverScreen:
         mouseButton = pygame.mouse.get_pressed()
         if self.retryBackgroundRect.topleft[0] <= mousePos[0] <= self.retryBackgroundRect.bottomright[0] and self.retryBackgroundRect.topleft[1] <= mousePos[1] <= self.retryBackgroundRect.bottomright[1] and mouseButton[0]:
             changeState(2)
+            logic.retry = True
         elif self.menuBackgroundRect.topleft[0] <= mousePos[0] <= self.menuBackgroundRect.bottomright[0] and \
                 self.menuBackgroundRect.topleft[1] <= mousePos[1] <= self.menuBackgroundRect.bottomright[1] and mouseButton[0]:
-            changeState(4)
+            changeState(1)
+            logic.retry = False
+        elif self.leaderBoardBackgroundRect.topleft <= mousePos <= self.leaderBoardTextRect.bottomright and mouseButton[0]:
+            changeState(5)
+            logic.retry = False
 
 class nameScreen:
     def __init__(self):
@@ -338,10 +361,16 @@ class leaderboardScreen:
         self.font = pygame.font.Font('font.ttf', cellSize)
         self.fontBig = pygame.font.Font('font.ttf', int(cellSize * 1.5))
 
+        self.backButton = pygame.image.load("graphics/backArrowLeft32.png")
+        self.backButton = pygame.transform.scale(self.backButton, (cellSize * 3, cellSize * 3))
+        self.backButtonRect = self.backButton.get_rect()
+        self.backButtonRect.centerx = 2 * cellSize
+        self.backButtonRect.centery = cellSize * 2
+
         self.leaderBoardText = self.fontBig.render("Leaderboard", False, "#FFFFFF")
         self.leaderBoardTextRect = self.leaderBoardText.get_rect()
         self.leaderBoardTextRect.centerx = screen.get_width() // 2
-        self.leaderBoardTextRect.centery += cellSize
+        self.leaderBoardTextRect.centery = cellSize * 2
 
         self.left = cellSize
         self.right = screen.get_width() - screen.get_width() // 4
@@ -359,21 +388,35 @@ class leaderboardScreen:
     def draw(self, surface):
         surface.blit(self.leaderBoardText, self.leaderBoardTextRect)
         self.update()
-
+        surface.blit(self.backButton, self.backButtonRect)
         for i in range(len(self.textsRects)):
             surface.blit(self.texts[i], self.textsRects[i])
 
     def update(self):
+        mousePos = pygame.mouse.get_pos()
+        mousePressed = pygame.mouse.get_pressed()
         scores = getLeaderboard()
-
         for i in range(10):
             self.texts[i] = self.font.render(f"{i+1}. {scores[i][1]}: {scores[i][2]}", False, "#FFFFFF")
 
-
+        if self.backButtonRect.topleft <= mousePos <= self.backButtonRect.bottomright and mousePressed[0]:
+            if logic.previousState == 3:
+                changeState(3)
+            else:
+                changeState(1)
 
 class logic:
-    state = 5
+    #these are the possible game states
+    # 1 -> mainMenu
+    # 2 -> game
+    # 3 -> gameOver
+    # 4 -> nameEntryScreen
+    # 5 -> leaderBoard
+    state = 3
+    previousState = 1
     name = "anon"
+    id = getTopId()
+    retry = False
     def __init__(self):
         self.mainGame = mainGame()
         self.mainScreen = mainScreen(screen)
