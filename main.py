@@ -41,8 +41,8 @@ def updateDB(name, score):
 
 def getLeaderboard():
     result = cursor.execute("SELECT * FROM leaderboard ORDER BY score DESC limit 10").fetchall()
-    print(result)
 
+    return result
 class mainGame:
     def __init__(self):
         self.snake = Snake()
@@ -346,69 +346,30 @@ class leaderboardScreen:
         self.left = cellSize
         self.right = screen.get_width() - screen.get_width() // 4
 
-        self.firstPlace = self.font.render("1. Anon: 0", False, "#FFFFFF")
-        self.firstPlaceRect = self.firstPlace.get_rect()
-        self.firstPlaceRect.left = self.left
-        self.firstPlaceRect.y += cellSize * 3
+        self.texts = []
+        self.textsRects = []
+        for i in range(10):
+            self.texts.append(self.font.render(f"{i+1}. Anon: 0", False, "#FFFFFF"))
 
-        self.secondPlace = self.font.render("2. Anon: 0", False, "#FFFFFF")
-        self.secondPlaceRect = self.secondPlace.get_rect()
-        self.secondPlaceRect.left = self.left
-        self.secondPlaceRect.y += self.firstPlaceRect.y + cellSize * 2
+        for i, text in enumerate(self.texts):
+            self.textsRects.append(text.get_rect())
+            self.textsRects[i].left = self.left
+            self.textsRects[i].y += cellSize * 2 * (i+2)
 
-        self.thirdPlace = self.font.render("3. Anon: 0", False, "#FFFFFF")
-        self.thirdPlaceRect = self.thirdPlace.get_rect()
-        self.thirdPlaceRect.left = self.left
-        self.thirdPlaceRect.y += self.secondPlaceRect.y + cellSize * 2
-
-        self.fourthPlace = self.font.render("4. Anon: 0", False, "#FFFFFF")
-        self.fourthPlaceRect = self.fourthPlace.get_rect()
-        self.fourthPlaceRect.left = self.left
-        self.fourthPlaceRect.y += self.thirdPlaceRect.y + cellSize * 2
-
-        self.fifthPlace = self.font.render("5. Anon: 0", False, "#FFFFFF")
-        self.fifthPlaceRect = self.fifthPlace.get_rect()
-        self.fifthPlaceRect.left = self.left
-        self.fifthPlaceRect.y += self.fourthPlaceRect.y + cellSize * 2
-
-        self.sixthPlace = self.font.render("6. Anon: 0", False, "#FFFFFF")
-        self.sixthPlaceRect = self.sixthPlace.get_rect()
-        self.sixthPlaceRect.left = self.left
-        self.sixthPlaceRect.y += self.fifthPlaceRect.y + cellSize * 2
-
-        self.seventhPlace = self.font.render("7. Matej Zorec: 0", False, "#FFFFFF")
-        self.seventhPlaceRect = self.seventhPlace.get_rect()
-        self.seventhPlaceRect.left = self.left
-        self.seventhPlaceRect.y = self.sixthPlaceRect.y + cellSize * 2
-
-        self.eightPlace = self.font.render("8. Anon: 0", False, "#FFFFFF")
-        self.eightPlaceRect = self.eightPlace.get_rect()
-        self.eightPlaceRect.left = self.lef
-        self.eightPlaceRect.y = self.seventhPlaceRect.y + cellSize * 2
-
-        self.ninthPlace = self.font.render("9. Anon: 0", False, "#FFFFFF")
-        self.ninthPlaceRect = self.ninthPlace.get_rect()
-        self.ninthPlaceRect.left = self.left
-        self.ninthPlaceRect.y += self.eightPlaceRect.y + cellSize * 2
-
-        self.tenthPlace = self.font.render("10. Anon: 0", False, "#FFFFFF")
-        self.tenthPlaceRect = self.tenthPlace.get_rect()
-        self.tenthPlaceRect.left = self.left
-        self.tenthPlaceRect.y += self.ninthPlaceRect.y + cellSize * 2
-
-    def update(self, surface):
+    def draw(self, surface):
         surface.blit(self.leaderBoardText, self.leaderBoardTextRect)
+        self.update()
 
-        surface.blit(self.firstPlace, self.firstPlaceRect)
-        surface.blit(self.secondPlace, self.secondPlaceRect)
-        surface.blit(self.thirdPlace, self.thirdPlaceRect)
-        surface.blit(self.fourthPlace, self.fourthPlaceRect)
-        surface.blit(self.fifthPlace, self.fifthPlaceRect)
-        surface.blit(self.sixthPlace, self.sixthPlaceRect)
-        surface.blit(self.seventhPlace, self.seventhPlaceRect)
-        surface.blit(self.eightPlace, self.eightPlaceRect)
-        surface.blit(self.ninthPlace, self.ninthPlaceRect)
-        surface.blit(self.tenthPlace, self.tenthPlaceRect)
+        for i in range(len(self.textsRects)):
+            surface.blit(self.texts[i], self.textsRects[i])
+
+    def update(self):
+        scores = getLeaderboard()
+
+        for i in range(10):
+            self.texts[i] = self.font.render(f"{i+1}. {scores[i][1]}: {scores[i][2]}", False, "#FFFFFF")
+
+
 
 class logic:
     state = 5
@@ -453,7 +414,7 @@ class logic:
         elif logic.state == 4:
             self.nameScreen.update(screen)
         elif logic.state == 5:
-            self.leaderboardScreen.update(screen)
+            self.leaderboardScreen.draw(screen)
 
 
 
