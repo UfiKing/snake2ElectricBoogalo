@@ -14,11 +14,8 @@ pygame.init()
 screen = pygame.display.set_mode( (cellSize * cellNumber, cellSize * cellNumber) )
 clock = pygame.time.Clock()
 
-
 SCREEN_UPDATE = pygame.USEREVENT#tle nardimo svoj event
 pygame.time.set_timer(SCREEN_UPDATE, 150)#in executamo tale event vsakih 150ms
-
-
 
 def changeState(newState):
     logic.previousState = logic.state
@@ -30,7 +27,7 @@ def changeUsername(newUsername):
 
 def addToDB(name, score):
     data = [name, score]
-    print(type(name))
+
     cursor.execute("INSERT INTO leaderboard (name, score) VALUES (?, ?)", data)
     connection.commit()
 
@@ -45,13 +42,13 @@ def getLeaderboard():
 
 def getTopId():
     ids = cursor.execute("SELECT * FROM leaderboard ORDER BY id DESC limit 10").fetchall()
-    print(ids)
+
     return ids[0][0]
 
 class mainGame:
     def __init__(self):
         self.snake = Snake()
-        self.fruit = Fruit()
+        self.fruit = Fruit(self.snake)
         self.timer = 0
         self.index = 0
         self.score = 0
@@ -74,9 +71,9 @@ class mainGame:
         self.text2Rect = self.text2.get_rect()
         self.text3Rect = self.text3.get_rect()
 
-        self.text3Rect.center = screen.get_width() / 2, 9.5 * cellSize
-        self.text2Rect.center = screen.get_width() / 2, 9.5 * cellSize
-        self.text1Rect.center = screen.get_width() / 2, 9.5 * cellSize
+        self.text3Rect.center = cellNumber // 2 * cellSize, cellNumber // 2 * cellSize
+        self.text2Rect.center = cellNumber // 2 * cellSize, cellNumber // 2 * cellSize
+        self.text1Rect.center = cellNumber // 2 * cellSize, cellNumber // 2 * cellSize
 
     def update(self):
 
@@ -118,16 +115,10 @@ class mainGame:
     def gameOver(self):
         changeState(3)
 
-        if logic.retry:
-            updateDB(logic.id, self.score)
-        else:
-            addToDB(logic.name, self.score)
-        print(logic.retry)
-        print(logic.id)
+        addToDB(logic.name, self.score)
         logic.id = getTopId()
-        print(logic.id)
         self.snake.setDefaults()
-        self.fruit.setDefaults()
+        self.fruit.setDefaults(self.snake)
         self.index = 0
         self.score = 0
 
@@ -251,26 +242,23 @@ class gameOverScreen:
         mouseButton = pygame.mouse.get_pressed()
         if self.retryBackgroundRect.topleft[0] <= mousePos[0] <= self.retryBackgroundRect.bottomright[0] and self.retryBackgroundRect.topleft[1] <= mousePos[1] <= self.retryBackgroundRect.bottomright[1] and mouseButton[0]:
             changeState(2)
-            logic.retry = True
+
         elif self.menuBackgroundRect.topleft[0] <= mousePos[0] <= self.menuBackgroundRect.bottomright[0] and \
                 self.menuBackgroundRect.topleft[1] <= mousePos[1] <= self.menuBackgroundRect.bottomright[1] and mouseButton[0]:
             changeState(1)
-            logic.retry = False
+
         elif self.leaderBoardBackgroundRect.topleft <= mousePos <= self.leaderBoardTextRect.bottomright and mouseButton[0]:
             changeState(5)
-            logic.retry = False
 
 class nameScreen:
     def __init__(self):
-
-
         self.font = pygame.font.Font('font.ttf', int(cellSize *1))
 
-        self.middle = (screen.get_height() // 2 // cellSize) - 1
+        self.middle = (cellNumber // 2 * cellSize)
 
         self.name = []
         self.pressed = False
-        self.inputRect = pygame.Rect(cellSize * 2, cellSize * self.middle - cellSize * 2, cellSize * 18, cellSize * 3)
+        self.inputRect = pygame.Rect(cellSize * 2, self.middle - cellSize * 2, (cellNumber - 4) * cellSize, cellSize * 3)
 
         self.nameText = self.font.render("".join(self.name), False, "#FFFFFF")
         self.nameTextRect = self.nameText.get_rect()
@@ -396,8 +384,11 @@ class leaderboardScreen:
         mousePos = pygame.mouse.get_pos()
         mousePressed = pygame.mouse.get_pressed()
         scores = getLeaderboard()
-        for i in range(10):
+
+        for i in range(len(scores)):
             self.texts[i] = self.font.render(f"{i+1}. {scores[i][1]}: {scores[i][2]}", False, "#FFFFFF")
+            if i == 10:
+                break
 
         if self.backButtonRect.topleft <= mousePos <= self.backButtonRect.bottomright and mousePressed[0]:
             if logic.previousState == 3:
@@ -412,11 +403,11 @@ class logic:
     # 3 -> gameOver
     # 4 -> nameEntryScreen
     # 5 -> leaderBoard
-    state = 3
+    state = 1
     previousState = 1
     name = "anon"
     id = getTopId()
-    retry = False
+
     def __init__(self):
         self.mainGame = mainGame()
         self.mainScreen = mainScreen(screen)
@@ -436,16 +427,13 @@ class logic:
                 self.mainGame.snake.direction = Vector2(1, 0)
             elif (event.key == pygame.K_a or event.key == pygame.K_LEFT) and self.mainGame.snake.currentDirection.x != 1:
                 self.mainGame.snake.direction = Vector2(-1, 0)
-        if event.type != SCREEN_UPDATE:
-            #print(pygame.event.event_name(event.type))
-            pass
+
         if event.type == pygame.TEXTINPUT and self.nameScreen.pressed:
-            print(pygame.event.event_name(event.type))
-            print(event.text)
+
             self.nameScreen.name.append(event.text)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE and len(self.nameScreen.name) > 0 and self.nameScreen.pressed:
             self.nameScreen.name.pop()
-            print("back")
+
 
     def drawAndUpdate(self, screen):
         if logic.state == 1:
@@ -458,8 +446,6 @@ class logic:
             self.nameScreen.update(screen)
         elif logic.state == 5:
             self.leaderboardScreen.draw(screen)
-
-
 
 game = logic()
 
@@ -475,8 +461,6 @@ def drawGrid(screen):
                     pygame.draw.rect(screen, "#b9dc5c",
                                      pygame.Rect(i * cellSize, j * cellSize, cellSize, cellSize))
 
-
-
 while True:
     #screen.fill("#AFD746")
     drawGrid(screen)
@@ -489,8 +473,5 @@ while True:
 
     game.drawAndUpdate(screen)
 
-
-
     pygame.display.update()
     clock.tick(60)
-

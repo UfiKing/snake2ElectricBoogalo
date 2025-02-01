@@ -10,6 +10,3 @@ if type(cellSize) != int:
     raise ValueError(f"Invalid cellSize type, expected {int} but got {type(cellSize)}")
 if type(cellNumber) != int:
     raise ValueError(f"Invalid cellSize type, expected {int} but got {type(cellNumber)}")
-
-
-

@@ -11,18 +11,17 @@ class Snake:
         return slika
 
     def setDefaults(self):
-        self.body = [Vector2(5, 9), Vector2(4, 9), Vector2(3, 9)]
+        self.body = [Vector2(cellNumber//2 - 4, cellNumber//2), Vector2( cellNumber//2 - 5, cellNumber//2), Vector2( cellNumber//2 - 6, cellNumber//2)]
         self.direction = Vector2(1, 0)
         self.newBlock = False
         self.currentDirection = self.direction
 
 
     def __init__(self):
-        self.body = [Vector2(5, 9), Vector2(4,9), Vector2(3,9)]
+        self.body = [Vector2(cellNumber//2 - 4, cellNumber//2), Vector2( cellNumber//2 - 5, cellNumber//2), Vector2( cellNumber//2 - 6, cellNumber//2)]
         self.direction = Vector2(1, 0)
         self.newBlock = False
         self.currentDirection = self.direction
-
 
         self.snakeSpriteSheet = pygame.image.load("Graphics/snake.png").convert_alpha()
 
@@ -54,7 +53,6 @@ class Snake:
             x_pos = int(block.x * cellSize)
             y_pos = int(block.y * cellSize)
             blockRect = pygame.Rect(x_pos, y_pos, cellSize, cellSize)
-
 
             if i == 0:
                 screen.blit(self.head, blockRect)
