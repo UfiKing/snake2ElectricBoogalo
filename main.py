@@ -144,10 +144,10 @@ class mainScreen:
 
         # set the center of the rectangular object.
 
-        self.mainTextRect.center = (screen.get_width()//2, screen.get_height() // 2 - (screen.get_height() // 4))
+        self.mainTextRect.center = (screen.get_width()//2, screen.get_height() // 2 - (screen.get_height() // 6))
 
-        self.startTextRect.midleft = (self.mainTextRect.x , screen.get_height() // 2)
-        self.leaderboardTextRect.midright = (self.mainTextRect.width + self.mainTextRect.x , screen.get_height() // 2)
+        self.startTextRect.center = (self.mainTextRect.centerx , self.mainTextRect.centery + cellSize * 3)
+        self.leaderboardTextRect.center = (self.mainTextRect.centerx , screen.get_height() // 2 - (screen.get_height() // 10) + cellSize * 4)
 
         self.startBackgroundRect = (pygame.Rect
                                 (self.startTextRect.centerx - (self.startTextRect.width // 2) - (self.startTextRect.width // 10),
@@ -247,7 +247,8 @@ class gameOverScreen:
                 self.menuBackgroundRect.topleft[1] <= mousePos[1] <= self.menuBackgroundRect.bottomright[1] and mouseButton[0]:
             changeState(1)
 
-        elif self.leaderBoardBackgroundRect.topleft <= mousePos <= self.leaderBoardTextRect.bottomright and mouseButton[0]:
+        elif self.leaderBoardBackgroundRect.topleft[0] <= mousePos[0] <= self.leaderBoardTextRect.bottomright[0] \
+                and self.leaderBoardBackgroundRect.topleft[1] <= mousePos[1] <= self.leaderBoardTextRect.bottomright[1] and mouseButton[0]:
             changeState(5)
 
 class nameScreen:
@@ -365,6 +366,10 @@ class leaderboardScreen:
 
         self.texts = []
         self.textsRects = []
+
+        self.oldLetters = ["š", "Š", "ž", "Ž", "č", "Č", "ć", "Ć", "đ", "Đ"]
+        self.newLetters = ["s", "S", "z", "Z", "c", "C", "c", "C", "dz", "DZ"]
+
         for i in range(10):
             self.texts.append(self.font.render(f"{i+1}. Anon: 0", False, "#FFFFFF"))
 
@@ -386,7 +391,12 @@ class leaderboardScreen:
         scores = getLeaderboard()
 
         for i in range(len(scores)):
-            self.texts[i] = self.font.render(f"{i+1}. {scores[i][1]}: {scores[i][2]}", False, "#FFFFFF")
+            name = scores[i][1]
+            for j in range(len(self.oldLetters)):
+                name = name.replace(self.oldLetters[j], self.newLetters[j])
+
+            self.texts[i] = self.font.render(f"{i+1}. {name}: {scores[i][2]}", False, "#FFFFFF")
+
             if i == 10:
                 break
 
