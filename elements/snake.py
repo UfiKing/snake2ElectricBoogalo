@@ -23,7 +23,7 @@ class Snake:
         self.newBlock = False
         self.currentDirection = self.direction
 
-        self.snakeSpriteSheet = pygame.image.load("Graphics/snake.png").convert_alpha()
+        self.snakeSpriteSheet = pygame.image.load("graphics/snake.png").convert_alpha()
 
         self.head_up = self.getImage(16, 0)
         self.head_down = self.getImage(48, 0)
