@@ -16,19 +16,28 @@ isDead = False
 previousState = state
 name = "anon"
 id = 1
-mode = 1
 
-# modes:
-# - 0b0000: default
-# - 0b0001: bad apples
-# - 0b0010: 3 apples
-# - 0b0100: 5 apples
-# - 0b0011: 3 bad apples
-# - 1: default
-# - 2: bad apples
-# - 3:
+badApples = False
+
+pacifist = False
 
 mouseButtonUp = False
+
+def getPacifist():
+    global pacifist
+    return pacifist
+
+def setPacifist(newState):
+    global pacifist
+    pacifist = newState
+
+def getBadApples():
+    global badApples
+    return badApples
+
+def setBadApples(newState):
+    global badApples
+    badApples = newState
 
 def setDead():
     global isDead
@@ -49,14 +58,6 @@ def setNumberOfApples(newNumberOfApples):
 def getNumberOfApples():
     global numberOfApples
     return numberOfApples
-
-def getMode():
-    return mode
-
-def changeMode(newMode):
-    global mode
-    mode = newMode
-
 
 def getMouseButtonUp():
     return mouseButtonUp

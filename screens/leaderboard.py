@@ -29,7 +29,7 @@ class leaderboardScreen:
         self.newLetters = ["s", "S", "z", "Z", "c", "C", "c", "C", "dz", "DZ"]
 
         for i in range(10):
-            self.texts.append(self.font.render(f"{i + 1}. Anon: 0", False, "#FFFFFF"))
+            self.texts.append(self.font.render(f"{i + 1}.Anon: 0", False, "#FFFFFF"))
 
         for i, text in enumerate(self.texts):
             self.textsRects.append(text.get_rect())
@@ -53,7 +53,7 @@ class leaderboardScreen:
             for j in range(len(self.oldLetters)):
                 name = name.replace(self.oldLetters[j], self.newLetters[j])
 
-            self.texts[i] = self.font.render(f"{i + 1}. {name}: {scores[i][2]}", False, "#FFFFFF")
+            self.texts[i] = self.font.render(f"{i + 1} {name}:{scores[i][2]}", False, "#FFFFFF")
 
             if i == 10:
                 break

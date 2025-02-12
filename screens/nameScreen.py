@@ -78,6 +78,18 @@ class nameScreen:
         self.currentNumberApple = 1
         self.numberApplePressed = False
 
+        self.pacifistOn = pygame.image.load("graphics/pacifistOn.png")
+        self.pacifistOn = pygame.transform.scale(self.pacifistOn, (cellSize * 2, cellSize * 2))
+        self.pacifistRect = self.pacifistOn.get_rect()
+        self.pacifistRect.bottom = self.inputRect.top - (cellSize * 2)
+        self.pacifistRect.left = self.numberAppleRect.right + cellSize
+
+        self.pacifistOff = pygame.image.load("graphics/pacifistOff.png")
+        self.pacifistOff = pygame.transform.scale(self.pacifistOff, (cellSize * 2, cellSize * 2))
+
+        self.pacifist = True
+        self.pacifistPressed = False
+
     def update(self, surface):
         mousePos = pygame.mouse.get_pos()
         mousePressed = pygame.mouse.get_pressed()
@@ -139,15 +151,20 @@ class nameScreen:
 
         surface.blit(self.submitText, self.submitTextRect)
 
+        #here we check if the bad apple variavle is on
+        # if it is
         if self.badAppleOn:
+            #we blit it on the screnn
             surface.blit(self.appleBad, self.appleBadRect)
+            #if the mouse is hovering wer display the normal apple
             if self.appleBadRect.topleft[0] <= mousePos[0] <= self.appleBadRect.bottomright[0] and \
                     self.appleBadRect.topleft[1] <= mousePos[1] <= self.appleBadRect.bottomright[1] and not self.applePressed:
                 surface.blit(self.apple, self.appleRect)
+                #and if the user presses the left mouse button while hovering we set the variable to false
                 if getMouseButtonUp():
                     self.badAppleOn = False
-                    self.applePressed = True
-
+                    self.applePressed = True#
+        #if the bad apple variable is off we just the the same but in reverse
         else:
             surface.blit(self.apple, self.appleRect)
             if self.appleBadRect.topleft[0] <= mousePos[0] <= self.appleBadRect.bottomright[0] and \
@@ -198,6 +215,30 @@ class nameScreen:
                 self.numberAppleRect.topleft[1] > mousePos[1] or mousePos[1] > self.numberAppleRect.bottomright[1]:
             self.numberApplePressed = False
 
+        if self.pacifist:
+
+            if self.pacifistRect.topleft[0] <= mousePos[0] <= self.pacifistRect.bottomright[0] and self.pacifistRect.topleft[1] <= mousePos[1] <= self.pacifistRect.bottomright[1] and not self.pacifistPressed:
+                surface.blit(self.pacifistOff, self.pacifistRect)
+                if getMouseButtonUp():
+                    self.pacifist = False
+                    self.pacifistPressed = True
+            else:
+                surface.blit(self.pacifistOn, self.pacifistRect)
+        else:
+            if self.pacifistRect.topleft[0] <= mousePos[0] <= self.pacifistRect.bottomright[0] and \
+                    self.pacifistRect.topleft[1] <= mousePos[1] <= self.pacifistRect.bottomright[
+                1] and not self.pacifistPressed:
+                surface.blit(self.pacifistOn, self.pacifistRect)
+                if getMouseButtonUp():
+                    self.pacifist = True
+                    self.pacifistPressed = False
+            else:
+                surface.blit(self.pacifistOff, self.pacifistRect)
+
+        if self.pacifistRect.topleft[0] > mousePos[0] or mousePos[0] > self.pacifistRect.bottomright[0] or \
+                self.pacifistRect.topleft[1] > mousePos[1] or mousePos[1] > self.pacifistRect.bottomright[1]:
+            self.pacifistPressed = False
+
     def submit(self):
         if len(self.name) < 1:
             username = "anon"
@@ -205,9 +246,7 @@ class nameScreen:
             username = "".join(self.name)
         changeUsername(username)
         self.name.clear()
-        if self.badAppleOn:
-            changeMode(2)
-        else:
-            changeMode(1)
+        setBadApples(self.badAppleOn)
         changeState(2)
         setNumberOfApples(self.currentNumberApple)
+        setPacifist(self.pacifist)

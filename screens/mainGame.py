@@ -12,8 +12,9 @@ class mainGame:
         self.badFruit = []
         for i in range(getNumberOfApples()):
             self.fruit.append(Fruit(self.snake))
-            if getMode() == 2:
+            if getBadApples():
                 self.badFruit.append(Fruit(self.snake, True))
+                self.badFruit[i].randomize(self.snake.body)
         for i in range(getNumberOfApples() - 1):
             self.fruit[i + 1].randomize(self.snake.body)
 
@@ -63,7 +64,7 @@ class mainGame:
 
 
     def draw(self, screen):
-        mode = getMode()
+        badApples = getBadApples()
 
         for apple in self.fruit:
             apple.drawFruit(screen)
@@ -75,13 +76,13 @@ class mainGame:
         elif 12 < self.index <= 18:
             screen.blit(self.text1, self.text1Rect)
         screen.blit(self.scoreText, self.scoreRect)
-        if mode == 2:
+        if badApples:
             for badFruit in self.badFruit:
                 badFruit.drawFruit(screen)
 
 
     def collide(self):
-        mode = getMode()
+
         for i, apple in enumerate(self.fruit):
             if apple.pos == self.snake.body[0]:
                 apple.randomize(self.snake.body)
@@ -90,20 +91,32 @@ class mainGame:
                 self.scoreText = self.font.render(str(self.score), False, "#FFFFFF")
                 self.scoreRect = self.scoreText.get_rect()
                 self.scoreRect.topleft = (10, 10)
-                if getMode() == 2:
+                if getBadApples():
                     self.badFruit[i].randomize(self.snake.body)
 
         for badApple in self.badFruit:
-            if badApple.pos == self.snake.body[0] and mode == 2:
+            if badApple.pos == self.snake.body[0] and getBadApples():
                 self.gameOver()
 
 
     def checkFail(self):
+        pacifist = getPacifist()
         if not 0 <= self.snake.body[0].x < cellNumber or not 0 <= self.snake.body[0].y < cellNumber:
-            self.gameOver()
+            head = self.snake.body[0]
+            if pacifist:
+                if head.x > cellNumber + 1:
+                    head.x = -1
+                elif head.x < 0:
+                    head.x = cellNumber + 1
+                elif head.y > cellNumber + 1:
+                    head.y = -1
+                elif head.y < 0:
+                    head.y = cellNumber +1
+            else:
+                self.gameOver()
 
         for block in self.snake.body[1:]:
-            if block == self.snake.body[0]:
+            if block == self.snake.body[0] and not pacifist:
                 self.gameOver()
 
     def gameOver(self):

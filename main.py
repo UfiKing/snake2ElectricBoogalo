@@ -35,7 +35,7 @@ class main:
                     event.key == pygame.K_a or event.key == pygame.K_LEFT) and self.mainGame.snake.currentDirection.x != 1:
                 self.mainGame.snake.direction = Vector2(-1, 0)
 
-        if event.type == pygame.TEXTINPUT and self.nameScreen.pressed:
+        if event.type == pygame.TEXTINPUT and self.nameScreen.pressed and len(self.nameScreen.name) != 12:
             self.nameScreen.name.append(event.text)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE and len(
                 self.nameScreen.name) > 0 and self.nameScreen.pressed:
