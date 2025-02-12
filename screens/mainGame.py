@@ -51,14 +51,16 @@ class mainGame:
         self.badFruit = [Fruit(self.snake, True)]
         self.badFruit[0].randomize(self.snake.body)
 
-    def update(self):
+    def update(self,screen):
         if getLivingState():
             self.killApples()
             setAlive()
         if self.index == 19:
-            self.snake.move()
-            self.collide()
-            self.checkFail()
+            if not getGameState():
+                self.snake.move()
+                self.collide()
+                self.checkFail()
+
         else:
             self.index += 1
 
@@ -80,6 +82,8 @@ class mainGame:
             for badFruit in self.badFruit:
                 badFruit.drawFruit(screen)
 
+        if getGameState():
+            self.pauseScreen(screen)
 
     def collide(self):
 
@@ -135,3 +139,63 @@ class mainGame:
         self.scoreRect = self.scoreText.get_rect()
         self.scoreRect.topleft = (10, 10)
 
+    def pauseScreen(self, surface):
+        font = pygame.font.Font("graphics/font.ttf", int(cellSize * 0.8))
+
+        rect = pygame.Rect(0, 0, cellSize * 10, 10 * cellSize)
+        rect.centerx = cellNumber // 2 * cellSize
+        rect.centery = cellNumber // 2 * cellSize
+
+        outerRect = pygame.Rect(0, 0, int(cellSize * 10.5), int(cellSize * 10.5))
+        outerRect.centerx = cellNumber // 2 * cellSize
+        outerRect.centery = cellNumber // 2 * cellSize
+
+        pygame.draw.rect(surface, "#000000", outerRect)
+        pygame.draw.rect(surface, "#F0AC92", rect)
+
+        text = font.render("Pause game", False, "#FFFFFF")
+        textRect = text.get_rect()
+        textRect.centerx = rect.centerx
+        textRect.centery = (cellNumber // 2 - 4) * cellSize
+
+
+
+
+        quitText = font.render("Quit", False, "#FFFFFF")
+        quitTextRect = quitText.get_rect()
+        quitTextRect.centerx = rect.centerx
+        quitTextRect.centery = (cellNumber // 2 - 1) * cellSize
+        pygame.draw.rect(surface, "#000000", quitTextRect)
+
+        quitTextBackground = quitTextRect.copy()
+        quitTextBackground.x -= cellSize // 2
+        quitTextBackground.y -= cellSize // 2
+        quitTextBackground.width += cellSize
+        quitTextBackground.height += cellSize
+        pygame.draw.rect(surface, "#000000", quitTextBackground)
+
+
+        resumeText = font.render("Resume", False, "#FFFFFF")
+        resumeTextRect = resumeText.get_rect()
+        resumeTextRect.centerx = rect.centerx
+        resumeTextRect.centery = (cellNumber // 2 + 2) * cellSize
+
+        resumeTextBackground = resumeTextRect.copy()
+        resumeTextBackground.x -= cellSize // 2
+        resumeTextBackground.y -= cellSize // 2
+        resumeTextBackground.width += cellSize
+        resumeTextBackground.height += cellSize
+        pygame.draw.rect(surface, "#000000", resumeTextBackground)
+
+        surface.blit(text, textRect)
+        surface.blit(quitText, quitTextRect)
+        surface.blit(resumeText, resumeTextRect)
+
+        mousePos = pygame.mouse.get_pos()
+        mouseButtons = pygame.mouse.get_pressed()
+        if quitTextBackground.collidepoint(mousePos):
+            if mouseButtons[0]:
+                self.gameOver()
+        if resumeTextBackground.collidepoint(mousePos):
+            if mouseButtons[0]:
+                switchGameState()

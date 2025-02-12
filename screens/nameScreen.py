@@ -87,7 +87,7 @@ class nameScreen:
         self.pacifistOff = pygame.image.load("graphics/pacifistOff.png")
         self.pacifistOff = pygame.transform.scale(self.pacifistOff, (cellSize * 2, cellSize * 2))
 
-        self.pacifist = True
+        self.pacifist = False
         self.pacifistPressed = False
 
     def update(self, surface):

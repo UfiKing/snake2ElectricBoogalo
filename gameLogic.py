@@ -3,7 +3,7 @@ import sqlite3
 connection = sqlite3.connect("leaderboard.db")
 cursor = connection.cursor()
 
-state = 4
+state = 1
 # these are the possible game states
 # 1 -> mainMenu
 # 2 -> game
@@ -18,10 +18,23 @@ name = "anon"
 id = 1
 
 badApples = False
-
 pacifist = False
 
 mouseButtonUp = False
+
+pauseGame = False
+
+def getGameState():
+    global pauseGame
+    return pauseGame
+
+def switchGameState():
+    global pauseGame
+    if pauseGame:
+        pauseGame = False
+    else:
+        pauseGame = True
+
 
 def getPacifist():
     global pacifist

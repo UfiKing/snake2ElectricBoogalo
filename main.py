@@ -18,10 +18,10 @@ class main:
         self.nameScreen = nameScreen()
         self.leaderboardScreen = leaderboardScreen(screen)
 
-    def events(self, event):
+    def events(self, event, screen):
         state = getState()
         if event.type == SCREEN_UPDATE and state == 2:
-            self.mainGame.update()
+            self.mainGame.update(screen)
         if event.type == pygame.KEYDOWN:
             if (event.key == pygame.K_w or event.key == pygame.K_UP) and self.mainGame.snake.currentDirection.y != 1:
                 self.mainGame.snake.direction = Vector2(0, -1)
@@ -34,6 +34,8 @@ class main:
             elif (
                     event.key == pygame.K_a or event.key == pygame.K_LEFT) and self.mainGame.snake.currentDirection.x != 1:
                 self.mainGame.snake.direction = Vector2(-1, 0)
+            elif event.key == pygame.K_ESCAPE and state == 2:
+                switchGameState()
 
         if event.type == pygame.TEXTINPUT and self.nameScreen.pressed and len(self.nameScreen.name) != 12:
             self.nameScreen.name.append(event.text)
@@ -92,7 +94,7 @@ while True:
             pygame.quit()
             sys.exit()
 
-        game.events(event)
+        game.events(event, screen)
 
     game.drawAndUpdate(screen)
 
