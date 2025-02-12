@@ -1,15 +1,27 @@
 import pygame
 from constants import cellSize, cellNumber
+from elements import fruit
 from elements.snake import Snake
 from elements.fruit import Fruit
 from gameLogic import *
 
 
 class mainGame:
+    def killApples(self):
+        self.fruit = []
+        self.badFruit = []
+        for i in range(getNumberOfApples()):
+            self.fruit.append(Fruit(self.snake))
+            if getMode() == 2:
+                self.badFruit.append(Fruit(self.snake, True))
+        for i in range(getNumberOfApples() - 1):
+            self.fruit[i + 1].randomize(self.snake.body)
+
     def __init__(self):
         self.snake = Snake()
-        self.fruit = Fruit(self.snake)
 
+        self.killApples()
+        setDead()
         self.timer = 0
         self.index = 0
         self.score = 0
@@ -35,11 +47,13 @@ class mainGame:
         self.text2Rect.center = cellNumber // 2 * cellSize, cellNumber // 2 * cellSize
         self.text1Rect.center = cellNumber // 2 * cellSize, cellNumber // 2 * cellSize
 
-        self.badFruit = Fruit(self.snake, True)
-        self.badFruit.randomize(self.snake.body)
+        self.badFruit = [Fruit(self.snake, True)]
+        self.badFruit[0].randomize(self.snake.body)
 
     def update(self):
-
+        if getLivingState():
+            self.killApples()
+            setAlive()
         if self.index == 19:
             self.snake.move()
             self.collide()
@@ -50,7 +64,9 @@ class mainGame:
 
     def draw(self, screen):
         mode = getMode()
-        self.fruit.drawFruit(screen)
+
+        for apple in self.fruit:
+            apple.drawFruit(screen)
         self.snake.draw(screen)
         if 0 < self.index <= 6:
             screen.blit(self.text3, self.text3Rect)
@@ -60,21 +76,27 @@ class mainGame:
             screen.blit(self.text1, self.text1Rect)
         screen.blit(self.scoreText, self.scoreRect)
         if mode == 2:
-            self.badFruit.drawFruit(screen)
+            for badFruit in self.badFruit:
+                badFruit.drawFruit(screen)
+
 
     def collide(self):
         mode = getMode()
-        if self.fruit.pos == self.snake.body[0]:
-            self.fruit.randomize(self.snake.body)
-            self.snake.addBlock()
-            self.score += 1
-            self.scoreText = self.font.render(str(self.score), False, "#FFFFFF")
-            self.scoreRect = self.scoreText.get_rect()
-            self.scoreRect.topleft = (10, 10)
-            self.badFruit.randomize(self.snake.body)
+        for i, apple in enumerate(self.fruit):
+            if apple.pos == self.snake.body[0]:
+                apple.randomize(self.snake.body)
+                self.snake.addBlock()
+                self.score += 1
+                self.scoreText = self.font.render(str(self.score), False, "#FFFFFF")
+                self.scoreRect = self.scoreText.get_rect()
+                self.scoreRect.topleft = (10, 10)
+                if getMode() == 2:
+                    self.badFruit[i].randomize(self.snake.body)
 
-        if self.badFruit.pos == self.snake.body[0] and mode == 2:
-            self.gameOver()
+        for badApple in self.badFruit:
+            if badApple.pos == self.snake.body[0] and mode == 2:
+                self.gameOver()
+
 
     def checkFail(self):
         if not 0 <= self.snake.body[0].x < cellNumber or not 0 <= self.snake.body[0].y < cellNumber:
@@ -91,10 +113,12 @@ class mainGame:
 
         changeId(getTopId())
         self.snake.setDefaults()
-        self.fruit.setDefaults(self.snake)
+        setDead()
+
         self.index = 0
         self.score = 0
 
         self.scoreText = self.font.render(str(self.score), False, "#FFFFFF")
         self.scoreRect = self.scoreText.get_rect()
         self.scoreRect.topleft = (10, 10)
+

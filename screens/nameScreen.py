@@ -38,7 +38,7 @@ class nameScreen:
         self.submitTextRect.width += cellSize * 2
         self.submitTextRect.height += cellSize
 
-        self.appleBad = pygame.image.load("graphics/jabloko16.bad.png")
+        self.appleBad = pygame.image.load("graphics/jabolko16.bad.png")
         self.appleBad = pygame.transform.scale(self.appleBad, (cellSize * 2, cellSize * 2))
         self.appleBadRect = self.appleBad.get_rect()
         self.appleBadRect.left = self.inputRect.left
@@ -52,6 +52,31 @@ class nameScreen:
 
         self.badAppleOn = False
         self.applePressed = False
+
+        self.numberApple1 = pygame.image.load("graphics/jabolko16_1.png")
+        self.numberApple1 = pygame.transform.scale(self.numberApple1, (cellSize * 2, cellSize * 2))
+        self.numberAppleRect = self.numberApple1.get_rect()
+        self.numberAppleRect.left = self.appleRect.right + cellSize
+        self.numberAppleRect.bottom = self.inputRect.top - (cellSize * 2)
+
+        self.numberApple3 = pygame.image.load("graphics/jabolko16_3.png")
+        self.numberApple3 = pygame.transform.scale(self.numberApple3, (cellSize * 2, cellSize * 2))
+
+        self.numberApple5 = pygame.image.load("graphics/jabolko16_5.png")
+        self.numberApple5 = pygame.transform.scale(self.numberApple5, (cellSize * 2, cellSize * 2))
+
+
+        self.numberApple1Bad = pygame.image.load("graphics/jabolko16_1.bad.png")
+        self.numberApple1Bad = pygame.transform.scale(self.numberApple1Bad, (cellSize * 2, cellSize * 2))
+
+        self.numberApple3Bad = pygame.image.load("graphics/jabolko16_3.bad.png")
+        self.numberApple3Bad = pygame.transform.scale(self.numberApple3Bad, (cellSize * 2, cellSize * 2))
+
+        self.numberApple5Bad = pygame.image.load("graphics/jabolko16_5.bad.png")
+        self.numberApple5Bad = pygame.transform.scale(self.numberApple5Bad, (cellSize * 2, cellSize * 2))
+
+        self.currentNumberApple = 1
+        self.numberApplePressed = False
 
     def update(self, surface):
         mousePos = pygame.mouse.get_pos()
@@ -122,6 +147,7 @@ class nameScreen:
                 if getMouseButtonUp():
                     self.badAppleOn = False
                     self.applePressed = True
+
         else:
             surface.blit(self.apple, self.appleRect)
             if self.appleBadRect.topleft[0] <= mousePos[0] <= self.appleBadRect.bottomright[0] and \
@@ -135,6 +161,43 @@ class nameScreen:
                 self.appleBadRect.topleft[1] > mousePos[1] or mousePos[1] > self.appleBadRect.bottomright[1]:
             self.applePressed = False
 
+
+
+        if self.currentNumberApple == 1 :
+            surface.blit(self.numberApple1, self.numberAppleRect)
+            if self.numberAppleRect.topleft[0] <= mousePos[0] <= self.numberAppleRect.bottomright[0] and \
+                    self.numberAppleRect.topleft[1] <= mousePos[1] <= self.numberAppleRect.bottomright[
+                1] and not self.numberApplePressed:
+                surface.blit(self.numberApple3Bad, self.numberAppleRect)
+                if getMouseButtonUp():
+                    self.currentNumberApple = 3
+                    self.numberApplePressed = True
+
+        elif self.currentNumberApple == 3 :
+            surface.blit(self.numberApple3, self.numberAppleRect)
+            if self.numberAppleRect.topleft[0] <= mousePos[0] <= self.numberAppleRect.bottomright[0] and \
+                    self.numberAppleRect.topleft[1] <= mousePos[1] <= self.numberAppleRect.bottomright[
+                1] and not self.numberApplePressed:
+                surface.blit(self.numberApple5Bad, self.numberAppleRect)
+                if getMouseButtonUp():
+                    self.currentNumberApple = 5
+                    self.numberApplePressed = True
+        elif self.currentNumberApple == 5 :
+            surface.blit(self.numberApple5, self.numberAppleRect)
+            if self.numberAppleRect.topleft[0] <= mousePos[0] <= self.numberAppleRect.bottomright[0] and \
+                    self.numberAppleRect.topleft[1] <= mousePos[1] <= self.numberAppleRect.bottomright[
+                1] and not self.numberApplePressed:
+                surface.blit(self.numberApple1Bad, self.numberAppleRect)
+                if getMouseButtonUp():
+                    self.currentNumberApple = 1
+                    self.numberApplePressed = True
+        else:
+            raise Exception(f"oppsie doopsie neki se je zjebal, v nameScreen.py, okoli vrstice 168 v matchcase stavku\n Unexpected value, expected 1, 3 or 5, instead got {self.currentNumberApple} ")
+
+        if self.numberAppleRect.topleft[0] > mousePos[0] or mousePos[0] > self.numberAppleRect.bottomright[0] or \
+                self.numberAppleRect.topleft[1] > mousePos[1] or mousePos[1] > self.numberAppleRect.bottomright[1]:
+            self.numberApplePressed = False
+
     def submit(self):
         if len(self.name) < 1:
             username = "anon"
@@ -147,3 +210,4 @@ class nameScreen:
         else:
             changeMode(1)
         changeState(2)
+        setNumberOfApples(self.currentNumberApple)

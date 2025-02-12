@@ -13,7 +13,7 @@ class Fruit:
         self.jabolko = pygame.transform.scale(self.jabolko, (cellSize, cellSize))
 
         if bad:
-            self.jabolko = pygame.image.load("graphics/jabloko16.bad.png").convert_alpha()
+            self.jabolko = pygame.image.load("graphics/jabolko16.bad.png").convert_alpha()
             self.jabolko = pygame.transform.scale(self.jabolko, (cellSize, cellSize))
 
     def drawFruit(self, screen):

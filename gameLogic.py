@@ -3,7 +3,7 @@ import sqlite3
 connection = sqlite3.connect("leaderboard.db")
 cursor = connection.cursor()
 
-state = 5
+state = 4
 # these are the possible game states
 # 1 -> mainMenu
 # 2 -> game
@@ -11,20 +11,47 @@ state = 5
 # 4 -> nameEntryScreen
 # 5 -> leaderBoard
 
+numberOfApples = 1
+isDead = False
 previousState = state
 name = "anon"
 id = 1
 mode = 1
+
 # modes:
+# - 0b0000: default
+# - 0b0001: bad apples
+# - 0b0010: 3 apples
+# - 0b0100: 5 apples
+# - 0b0011: 3 bad apples
 # - 1: default
 # - 2: bad apples
+# - 3:
 
 mouseButtonUp = False
 
+def setDead():
+    global isDead
+    isDead = True
+
+def setAlive():
+    global isDead
+    isDead = False
+
+def getLivingState():
+    global isDead
+    return isDead
+
+def setNumberOfApples(newNumberOfApples):
+    global numberOfApples
+    numberOfApples = newNumberOfApples
+
+def getNumberOfApples():
+    global numberOfApples
+    return numberOfApples
 
 def getMode():
     return mode
-
 
 def changeMode(newMode):
     global mode

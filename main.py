@@ -10,12 +10,6 @@ from screens.leaderboard import leaderboardScreen
 from gameLogic import *
 
 class main:
-    # these are the possible game states
-    # 1 -> mainMenu
-    # 2 -> game
-    # 3 -> gameOver
-    # 4 -> nameEntryScreen
-    # 5 -> leaderBoard
 
     def __init__(self, screen):
         self.mainGame = mainGame()
