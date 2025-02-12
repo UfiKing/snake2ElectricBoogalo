@@ -2,7 +2,7 @@ import pygame
 from constants import cellSize, cellNumber
 from elements.snake import Snake
 from elements.fruit import Fruit
-from functions import *
+from gameLogic import *
 
 
 class mainGame:
@@ -46,9 +46,10 @@ class mainGame:
             self.checkFail()
         else:
             self.index += 1
-        print(self.index)
+
 
     def draw(self, screen):
+        mode = getMode()
         self.fruit.drawFruit(screen)
         self.snake.draw(screen)
         if 0 < self.index <= 6:
@@ -62,6 +63,7 @@ class mainGame:
             self.badFruit.drawFruit(screen)
 
     def collide(self):
+        mode = getMode()
         if self.fruit.pos == self.snake.body[0]:
             self.fruit.randomize(self.snake.body)
             self.snake.addBlock()

@@ -1,6 +1,6 @@
 import pygame
 from constants import cellSize, cellNumber
-from functions import *
+from gameLogic import *
 
 
 class gameOverScreen:

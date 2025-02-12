@@ -1,6 +1,6 @@
 import pygame
 from constants import cellSize, cellNumber
-from functions import *
+from gameLogic import *
 
 class nameScreen:
     def __init__(self):
@@ -38,13 +38,20 @@ class nameScreen:
         self.submitTextRect.width += cellSize * 2
         self.submitTextRect.height += cellSize
 
-        self.apple = pygame.image.load("graphics/jabloko16.bad.png")
+        self.appleBad = pygame.image.load("graphics/jabloko16.bad.png")
+        self.appleBad = pygame.transform.scale(self.appleBad, (cellSize * 2, cellSize * 2))
+        self.appleBadRect = self.appleBad.get_rect()
+        self.appleBadRect.left = self.inputRect.left
+        self.appleBadRect.bottom = self.inputRect.top - (cellSize * 2)
+
+        self.apple = pygame.image.load("graphics/jabolko16.png")
         self.apple = pygame.transform.scale(self.apple, (cellSize * 2, cellSize * 2))
         self.appleRect = self.apple.get_rect()
         self.appleRect.left = self.inputRect.left
-        self.appleRect.bottom = self.inputRect.top - (cellSize * 4)
+        self.appleRect.bottom = self.inputRect.top - (cellSize * 2)
 
-        self.appleSelectRect = pygame.Rect(self.appleRect.left, self.appleRect.bottom + cellSize, self.appleRect.width, self.appleRect.height)
+        self.badAppleOn = False
+        self.applePressed = False
 
     def update(self, surface):
         mousePos = pygame.mouse.get_pos()
@@ -54,7 +61,6 @@ class nameScreen:
         if self.backButtonRect.topleft[0] <= mousePos[0] <= self.backButtonRect.bottomright[0] and \
                 self.backButtonRect.topleft[1] <= mousePos[1] <= self.backButtonRect.bottomright[0] and mousePressed[0] :
             changeState(1)
-
 
         if self.inputRect.topleft[0] <= mousePos[0] <= self.inputRect.bottomright[0] and self.inputRect.topleft[1] <= mousePos[1] <= \
                 self.inputRect.bottomright[1] :
@@ -108,8 +114,26 @@ class nameScreen:
 
         surface.blit(self.submitText, self.submitTextRect)
 
-        surface.blit(self.apple, self.appleRect)
-        pygame.draw.rect(surface, "#AF65FA", self.appleSelectRect)
+        if self.badAppleOn:
+            surface.blit(self.appleBad, self.appleBadRect)
+            if self.appleBadRect.topleft[0] <= mousePos[0] <= self.appleBadRect.bottomright[0] and \
+                    self.appleBadRect.topleft[1] <= mousePos[1] <= self.appleBadRect.bottomright[1] and not self.applePressed:
+                surface.blit(self.apple, self.appleRect)
+                if getMouseButtonUp():
+                    self.badAppleOn = False
+                    self.applePressed = True
+        else:
+            surface.blit(self.apple, self.appleRect)
+            if self.appleBadRect.topleft[0] <= mousePos[0] <= self.appleBadRect.bottomright[0] and \
+                    self.appleBadRect.topleft[1] <= mousePos[1] <= self.appleBadRect.bottomright[1] and not self.applePressed:
+                surface.blit(self.appleBad, self.appleBadRect)
+                if getMouseButtonUp():
+                    self.badAppleOn = True
+                    self.applePressed = True
+
+        if self.appleBadRect.topleft[0] > mousePos[0] or mousePos[0] > self.appleBadRect.bottomright[0] or \
+                self.appleBadRect.topleft[1] > mousePos[1] or mousePos[1] > self.appleBadRect.bottomright[1]:
+            self.applePressed = False
 
     def submit(self):
         if len(self.name) < 1:
@@ -118,4 +142,8 @@ class nameScreen:
             username = "".join(self.name)
         changeUsername(username)
         self.name.clear()
+        if self.badAppleOn:
+            changeMode(2)
+        else:
+            changeMode(1)
         changeState(2)

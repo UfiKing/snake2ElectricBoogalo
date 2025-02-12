@@ -1,6 +1,4 @@
-import sys
 import pygame
-from constants import cellSize, cellNumber
 from pygame import Vector2
 from screens.mainScreen import mainScreen
 from screens.mainGame import mainGame
@@ -9,7 +7,13 @@ from screens.nameScreen import nameScreen
 from screens.leaderboard import leaderboardScreen
 from gameLogic import *
 
-class main:
+pygame.init()
+
+SCREEN_UPDATE = pygame.USEREVENT  # tle nardimo svoj event
+pygame.time.set_timer(SCREEN_UPDATE, 150)  # in executamo tale event vsakih 150ms
+
+
+class logic:
     # these are the possible game states
     # 1 -> mainMenu
     # 2 -> game
@@ -46,11 +50,6 @@ class main:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE and len(
                 self.nameScreen.name) > 0 and self.nameScreen.pressed:
             self.nameScreen.name.pop()
-        if event.type == pygame.MOUSEBUTTONUP:
-            setMouseButtonUp(True)
-        else:
-            setMouseButtonUp(False)
-
 
     def drawAndUpdate(self, screen):
         state = getState()
@@ -64,43 +63,3 @@ class main:
             self.nameScreen.update(screen)
         elif state == 5:
             self.leaderboardScreen.draw(screen)
-
-
-pygame.init()
-
-screen = pygame.display.set_mode( (cellSize * cellNumber, cellSize * cellNumber) )
-clock = pygame.time.Clock()
-
-
-game = main(screen)
-SCREEN_UPDATE = pygame.USEREVENT  # tle nardimo svoj event
-pygame.time.set_timer(SCREEN_UPDATE, 150)  # in executamo tale event vsakih 150ms
-
-
-
-def drawGrid(screen):
-    for i in range(cellNumber):
-        for j in range(cellNumber):
-            if i % 2 == 0:
-                if j % 2 == 0:
-                    pygame.draw.rect(screen, "#AFD746", pygame.Rect(i * cellSize, j * cellSize, cellSize, cellSize))
-                    pygame.draw.rect(screen, "#b9dc5c", pygame.Rect((i + 1) * cellSize, j * cellSize, cellSize, cellSize))
-                else:
-                    pygame.draw.rect(screen, "#AFD746", pygame.Rect((i+1) * cellSize, j * cellSize, cellSize, cellSize))
-                    pygame.draw.rect(screen, "#b9dc5c",
-                                     pygame.Rect(i * cellSize, j * cellSize, cellSize, cellSize))
-
-while True:
-    #screen.fill("#AFD746")
-    drawGrid(screen)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-        game.events(event)
-
-    game.drawAndUpdate(screen)
-
-    pygame.display.update()
-    clock.tick(60)

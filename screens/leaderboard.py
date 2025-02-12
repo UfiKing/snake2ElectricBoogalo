@@ -1,6 +1,6 @@
 import pygame
 from constants import cellSize
-from functions import *
+from gameLogic import *
 
 
 class leaderboardScreen:
@@ -37,7 +37,7 @@ class leaderboardScreen:
             self.textsRects[i].y += cellSize * 2 * (i + 2)
 
     def draw(self, surface):
-        surface.blit(self.leaderBoardText, self.leaderBoardTextRect)
+
         self.update()
         surface.blit(self.backButton, self.backButtonRect)
         for i in range(len(self.textsRects)):
