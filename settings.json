@@ -1,6 +1,7 @@
 {
   "cell": {
     "size" : 48,
-    "number" : 25
-  }
+    "number" : 20
+  },
+  "canQuit": 0
 }

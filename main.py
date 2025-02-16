@@ -1,6 +1,6 @@
 import sys
 import pygame
-from constants import cellSize, cellNumber
+from constants import cellSize, cellNumber, canQuit
 from pygame import Vector2
 from screens.mainScreen import mainScreen
 from screens.mainGame import mainGame
@@ -21,7 +21,7 @@ class main:
     def events(self, event, screen):
         state = getState()
         if event.type == SCREEN_UPDATE and state == 2:
-            self.mainGame.update(screen)
+            self.mainGame.update()
         if event.type == pygame.KEYDOWN:
             if (event.key == pygame.K_w or event.key == pygame.K_UP) and self.mainGame.snake.currentDirection.y != 1:
                 self.mainGame.snake.direction = Vector2(0, -1)
@@ -35,7 +35,10 @@ class main:
                     event.key == pygame.K_a or event.key == pygame.K_LEFT) and self.mainGame.snake.currentDirection.x != 1:
                 self.mainGame.snake.direction = Vector2(-1, 0)
             elif event.key == pygame.K_ESCAPE and state == 2:
-                switchGameState()
+                if getGameState():
+                    pauseMenuOff()
+                else:
+                    pauseMenuOn()
 
         if event.type == pygame.TEXTINPUT and self.nameScreen.pressed and len(self.nameScreen.name) != 12:
             self.nameScreen.name.append(event.text)
@@ -90,7 +93,7 @@ while True:
     #screen.fill("#AFD746")
     drawGrid(screen)
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT and canQuit:
             pygame.quit()
             sys.exit()
 

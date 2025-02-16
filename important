@@ -1,1 +1,10 @@
-jošt 23
+DROP TABLE leaderboard;
+CREATE TABLE leaderboard (
+    id integer AUTO_INCREMENT,
+    name VARCHAR(15),
+    score integer,
+    apples integer,
+    bad boolean,
+    boxes boolean,
+    PRIMARY KEY (id)
+)

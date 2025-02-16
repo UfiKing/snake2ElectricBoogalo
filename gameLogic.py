@@ -11,6 +11,7 @@ state = 1
 # 4 -> nameEntryScreen
 # 5 -> leaderBoard
 
+
 numberOfApples = 1
 isDead = False
 previousState = state
@@ -19,21 +20,59 @@ id = 1
 
 badApples = False
 pacifist = False
+blocks = False
 
 mouseButtonUp = False
 
 pauseGame = False
 
+
+def addToDB(inputName, score, apples, bad, boxes):
+    data = [inputName, score, apples, bad, boxes]
+
+    cursor.execute("INSERT INTO leaderboard (name, score, apples, bad, boxes) VALUES (?, ?, ?, ?, ?)", data)
+    connection.commit()
+
+
+def updateDB(id, score):
+    data = [score, id]
+    cursor.execute("UPDATE leaderboard SET score=? WHERE id=?", data)
+    connection.commit()
+
+
+def getLeaderboard(numberOfApples):
+    data = [numberOfApples]
+    result = cursor.execute("SELECT * FROM leaderboard WHERE apples=? ORDER BY score DESC limit 10 ", data).fetchall()
+    return result
+
+
+def getTopId():
+    ids = cursor.execute("SELECT * FROM leaderboard ORDER BY id DESC limit 10").fetchall()
+    return ids[0][0]
+
+def getBlocks():
+    global blocks
+    return blocks
+
+def disableBlocks():
+    global blocks
+    blocks = False
+
+def enableBlocks():
+    global blocks
+    blocks = True
+
 def getGameState():
     global pauseGame
     return pauseGame
 
-def switchGameState():
+def pauseMenuOff():
     global pauseGame
-    if pauseGame:
-        pauseGame = False
-    else:
-        pauseGame = True
+    pauseGame = False
+
+def pauseMenuOn():
+    global pauseGame
+    pauseGame = True
 
 
 def getPacifist():
@@ -81,27 +120,6 @@ def setMouseButtonUp(newState):
     mouseButtonUp = newState
 
 
-def addToDB(inputName, score):
-    data = [inputName, score]
-
-    cursor.execute("INSERT INTO leaderboard (name, score) VALUES (?, ?)", data)
-    connection.commit()
-
-
-def updateDB(id, score):
-    data = [score, id]
-    cursor.execute("UPDATE leaderboard SET score=? WHERE id=?", data)
-    connection.commit()
-
-
-def getLeaderboard():
-    result = cursor.execute("SELECT * FROM leaderboard ORDER BY score DESC limit 10").fetchall()
-    return result
-
-
-def getTopId():
-    ids = cursor.execute("SELECT * FROM leaderboard ORDER BY id DESC limit 10").fetchall()
-    return ids[0][0]
 
 
 def changeState(newState):
@@ -109,7 +127,6 @@ def changeState(newState):
     global previousState
     previousState = state
     state = newState
-    getLeaderboard()
 
 
 

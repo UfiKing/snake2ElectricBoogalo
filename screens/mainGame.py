@@ -1,9 +1,11 @@
+import random
+
 import pygame
 from constants import cellSize, cellNumber
-from elements import fruit
 from elements.snake import Snake
 from elements.fruit import Fruit
 from gameLogic import *
+from elements.block import Block
 
 
 class mainGame:
@@ -18,8 +20,22 @@ class mainGame:
         for i in range(getNumberOfApples() - 1):
             self.fruit[i + 1].randomize(self.snake.body)
 
+    def addBlock(self):
+        x = random.randint(0, cellNumber)
+        y = random.randint(0, cellNumber)
+        self.blocks.append(Block(x, y))
+
+    def drawBlocks(self, screen):
+        for block in self.blocks:
+            block.draw(screen)
+
+    def destroyBlocks(self):
+        self.blocks.clear()
+
     def __init__(self):
         self.snake = Snake()
+        self.blocks = []
+        self.newBlock = False
 
         self.killApples()
         setDead()
@@ -51,7 +67,7 @@ class mainGame:
         self.badFruit = [Fruit(self.snake, True)]
         self.badFruit[0].randomize(self.snake.body)
 
-    def update(self,screen):
+    def update(self):
         if getLivingState():
             self.killApples()
             setAlive()
@@ -61,9 +77,9 @@ class mainGame:
                 self.collide()
                 self.checkFail()
 
+
         else:
             self.index += 1
-
 
     def draw(self, screen):
         badApples = getBadApples()
@@ -82,6 +98,9 @@ class mainGame:
             for badFruit in self.badFruit:
                 badFruit.drawFruit(screen)
 
+        if getBlocks():
+            self.drawBlocks(screen)
+
         if getGameState():
             self.pauseScreen(screen)
 
@@ -98,10 +117,26 @@ class mainGame:
                 if getBadApples():
                     self.badFruit[i].randomize(self.snake.body)
 
+                if getBlocks():
+                    match self.newBlock:
+                        case True:
+                            self.addBlock()
+                            self.newBlock = False
+                        case False:
+                            self.newBlock = True
+                        case _:
+                            raise ValueError(
+                                f"Python being python, zjebal se je, self.newBlock bi mogu bit boolean, ampak je {type(self.newBlock)}, no idea kje se je converion zgodu, good luck tho")
+
         for badApple in self.badFruit:
             if badApple.pos == self.snake.body[0] and getBadApples():
+                self.snake.body.pop()
+                badApple.randomize(self.snake.body)
+        if len(self.snake.body) == 1:
+            self.gameOver()
+        for block in self.blocks:
+            if self.snake.body[0] == block.position:
                 self.gameOver()
-
 
     def checkFail(self):
         pacifist = getPacifist()
@@ -115,7 +150,7 @@ class mainGame:
                 elif head.y > cellNumber + 1:
                     head.y = -1
                 elif head.y < 0:
-                    head.y = cellNumber +1
+                    head.y = cellNumber + 1
             else:
                 self.gameOver()
 
@@ -123,12 +158,11 @@ class mainGame:
             if block == self.snake.body[0] and not pacifist:
                 self.gameOver()
 
-    def gameOver(self):
+    def gameOver(self, pacifist=False):
         changeState(3)
-
-        addToDB(getUsername(), self.score)
-
-        changeId(getTopId())
+        if pacifist:
+            addToDB(getUsername(), self.score, getNumberOfApples(), getBadApples(), getBlocks())
+            changeId(getTopId())
         self.snake.setDefaults()
         setDead()
 
@@ -138,6 +172,8 @@ class mainGame:
         self.scoreText = self.font.render(str(self.score), False, "#FFFFFF")
         self.scoreRect = self.scoreText.get_rect()
         self.scoreRect.topleft = (10, 10)
+        pauseMenuOff()
+        self.destroyBlocks()
 
     def pauseScreen(self, surface):
         font = pygame.font.Font("graphics/font.ttf", int(cellSize * 0.8))
@@ -158,9 +194,6 @@ class mainGame:
         textRect.centerx = rect.centerx
         textRect.centery = (cellNumber // 2 - 4) * cellSize
 
-
-
-
         quitText = font.render("Quit", False, "#FFFFFF")
         quitTextRect = quitText.get_rect()
         quitTextRect.centerx = rect.centerx
@@ -173,7 +206,6 @@ class mainGame:
         quitTextBackground.width += cellSize
         quitTextBackground.height += cellSize
         pygame.draw.rect(surface, "#000000", quitTextBackground)
-
 
         resumeText = font.render("Resume", False, "#FFFFFF")
         resumeTextRect = resumeText.get_rect()
@@ -195,7 +227,7 @@ class mainGame:
         mouseButtons = pygame.mouse.get_pressed()
         if quitTextBackground.collidepoint(mousePos):
             if mouseButtons[0]:
-                self.gameOver()
+                self.gameOver(True)
         if resumeTextBackground.collidepoint(mousePos):
             if mouseButtons[0]:
-                switchGameState()
+                pauseMenuOff()

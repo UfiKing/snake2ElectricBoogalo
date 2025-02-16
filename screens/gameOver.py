@@ -59,16 +59,13 @@ class gameOverScreen:
     def pressButtons(self):
         mousePos = pygame.mouse.get_pos()
         mouseButton = pygame.mouse.get_pressed()
-        if self.retryBackgroundRect.topleft[0] <= mousePos[0] <= self.retryBackgroundRect.bottomright[0] and \
-                self.retryBackgroundRect.topleft[1] <= mousePos[1] <= self.retryBackgroundRect.bottomright[1] and \
-                mouseButton[0]:
-            changeState(2)
 
-        elif self.menuBackgroundRect.topleft[0] <= mousePos[0] <= self.menuBackgroundRect.bottomright[0] and \
-                self.menuBackgroundRect.topleft[1] <= mousePos[1] <= self.menuBackgroundRect.bottomright[1] and \
-                mouseButton[0]:
+        if self.retryBackgroundRect.collidepoint(mousePos):
+            if getMouseButtonUp():
+                changeState(2)
+
+        elif self.menuBackgroundRect.collidepoint(mousePos) and getMouseButtonUp():
             changeState(1)
 
-        elif self.leaderBoardBackgroundRect.topleft[0] <= mousePos[0] <= self.leaderBoardTextRect.bottomright[0] \
-                and self.leaderBoardBackgroundRect.topleft[1] <= mousePos[1] <= self.leaderBoardTextRect.bottomright[1] and mouseButton[0]:
+        elif self.leaderBoardBackgroundRect.collidepoint(mousePos) and getMouseButtonUp():
             changeState(5)
